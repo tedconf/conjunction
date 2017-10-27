@@ -84,7 +84,7 @@ test( "connect/types/object...", sub => {
       .then(
         () => assert.fail( 'The request should not resolve.' ),
         err => {
-          assert.equals( err.message, 'Could not resolve a query including an undefined field.', 'The correct error should be returned.' );
+          assert.ok( err.message.match( /^Could not resolve a query including an undefined field\./ ), 'The correct error should be returned.' );
           assert.end();
         }
       );

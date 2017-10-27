@@ -16,7 +16,7 @@ export default function ObjectType({ name, fields = {} } = {}) {
       const resolvers = keys.map( key => {
         const fieldDef = fields[key];
 
-        if ( !fieldDef || !fieldDef.type ) return Promise.reject( new Error( 'Could not resolve a query including an undefined field.' ) );
+        if ( !fieldDef || !fieldDef.type ) return Promise.reject( new Error( `Could not resolve a query including an undefined field. The field '${ key }' is not defined on ${ name }(${ Object.keys( fields ).join( ', ' ) }).` ) );
 
         const { source: fieldSource, type: fieldType } = fieldDef;
 
