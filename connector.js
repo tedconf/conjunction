@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-// TODO: DRY
-const getDisplayName = Component => Component.displayName || Component.name || 'Component';
+import { getDisplayName } from 'util/hoc';
 
 import {
   PROVIDER_KEY,
