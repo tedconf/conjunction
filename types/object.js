@@ -9,6 +9,10 @@ export default function ObjectType({ name, fields = {} } = {}) {
     resolve( source, query ) {
       const keys = Object.keys( query );
 
+      if ( source === null ) {
+        return Promise.resolve( source );
+      }
+
       // Pass the source to the field resolver for each field that is represented in the query,
       // then recurse by taking the result as the "source" relevant to fields on that
       // source (if that node has fields).

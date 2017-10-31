@@ -39,13 +39,16 @@ export const withData = ( query ) => WrappedComponent => {
       const provider = this.context[PROVIDER_KEY];
 
       // Connect to the provider.
-      this.connection = provider.connect( query, res => this.setState( ({ data }) => ({
-        loaded: true,
-        data: {
-          ...data,
-          ...res
-        }
-      })));
+      this.connection = provider.connect( query, {
+        next: res => this.setState( ({ data }) => ({
+          loaded: true,
+          data: {
+            ...data,
+            ...res
+          }
+        })),
+        error: err => console.error( err )   // TODO: Handle error.
+      });
     }
 
     componentWillUnmount() {

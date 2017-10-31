@@ -1,10 +1,13 @@
 export default function Store( schema ) {
   return {
-    connect( query, receiver ) {
+    connect( query, { next, error }) {
       console.log( 'Connected!', query );
 
       schema.query( query )
-        .then( res => receiver( res ) );
+        .then(
+          res => next( res ),
+          err => error( err )
+        );
 
       return {
         release() {

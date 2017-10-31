@@ -184,4 +184,63 @@ test( "connect/types/object...", sub => {
         err => assert.end( err )
       );
   });
+
+  sub.test( "...should resolve to null if the source is null.", assert => {
+    const Sample = ObjectType({
+      name: 'Sample',
+      fields: {
+        a: {
+          type: StringType
+        }
+      }
+    });
+
+    const query = {
+      a: true
+    };
+
+    Sample.resolve( null, query )
+      .then(
+        res => {
+          assert.equals( res, null, 'The schema should resolve to null.' );
+          assert.end();
+        },
+        err => assert.end( err )
+      );
+  });
+
+  sub.test( "...should reject the returned promise if a nested source rejects.", assert => {
+    const Session = ObjectType({
+      name: 'Session',
+      fields: {
+        live: {
+          type: StringType
+        }
+      }
+    });
+
+    const QueryRoot = ObjectType({
+      name: 'QueryRoot',
+      fields: {
+        session: {
+          type: Session,
+          source: () => Promise.reject({
+            message: 'Session could not be loaded.'
+          })
+        }
+      }
+    });
+
+    const request = QueryRoot.resolve( undefined, { session: { fields: { live: true } } } );
+
+    assert.equals( typeof request.then, 'function', 'Should return a promise.' );
+
+    request.then(
+      () => assert.fail( 'The request should not resolve.' ),
+      err => {
+        assert.deepEquals( err, { message: 'Session could not be loaded.' }, 'The error should be passed through.' );
+        assert.end();
+      }
+    );
+  });
 });
