@@ -9,6 +9,7 @@ export default function ObjectType({ name, fields = {} } = {}) {
     resolve( source, query ) {
       const keys = Object.keys( query );
 
+      // If the source is null, then do not proceed with deeper resolution.
       if ( source === null ) {
         return Promise.resolve( source );
       }
@@ -19,13 +20,16 @@ export default function ObjectType({ name, fields = {} } = {}) {
 
       const resolvers = keys.map( key => {
         const fieldDef = fields[key];
+        const queryParams = query[key];
 
         if ( !fieldDef || !fieldDef.type ) return Promise.reject( new Error( `Could not resolve a query including an undefined field. The field '${ key }' is not defined on ${ name }(${ Object.keys( fields ).join( ', ' ) }).` ) );
 
         const { source: fieldSource, type: fieldType } = fieldDef;
 
-        return Promise.resolve( fieldSource && fieldSource( source ) || defaultFieldSource( source, key ) )
-          .then( value => fieldType.resolve( value, typeof query[key] === 'object' ? query[key].fields : query[key] ) )
+        // TODO: Validate query arguments: queryParams.args should match fieldDef.args.
+
+        return Promise.resolve( fieldSource && fieldSource( source, queryParams.args ) || defaultFieldSource( source, key ) )
+          .then( value => fieldType.resolve( value, typeof queryParams === 'object' ? queryParams.fields : queryParams ) )
           .then( value => [
             key,
             value

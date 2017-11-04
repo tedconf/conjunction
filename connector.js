@@ -38,7 +38,7 @@ export const withData = ( query ) => WrappedComponent => {
       const provider = this.context[PROVIDER_KEY];
 
       // Connect to the provider.
-      this.connection = provider.connect( query, {
+      this.connection = provider.connect( typeof query === 'function' ? query( this.props ) : query, {
         next: res => this.setState( ({ data }) => ({
           loaded: true,
           data: {

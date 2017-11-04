@@ -2,6 +2,7 @@ import test from 'tape';
 
 import ObjectType from './object';
 import StringType from './string';
+import IntType from './int';
 
 test( "connect/types/object...", sub => {
   sub.test( "...should expose fields via a .field() method.", assert => {
@@ -183,6 +184,74 @@ test( "connect/types/object...", sub => {
         },
         err => assert.end( err )
       );
+  });
+
+  sub.test( "...should pass field arguments from the query to the field source.", assert => {
+    // https://en.wikipedia.org/wiki/List_of_battleships_of_the_United_States_Navy
+    const registry = {
+      1011: {
+        id: 1011,
+        name: 'USS Delaware',
+        commissioned: '1910-04-04'
+      }
+    };
+
+    const params = {
+      ship: {
+        args: {
+          id: 1011
+        },
+        fields: {
+          name: true,
+          commissioned: true
+        }
+      }
+    };
+
+    const Ship = ObjectType({
+      name: 'Ship',
+      fields: {
+        id: {
+          type: IntType
+        },
+        name: {
+          type: StringType
+        },
+        commissioned: {
+          type: StringType
+        }
+      }
+    });
+
+    const Query = ObjectType({
+      name: 'Query',
+      fields: {
+        ship: {
+          type: Ship,
+          args: {
+            id: IntType
+          },
+          source: ( _, { id }) => Promise.resolve( registry[id] )
+        }
+      }
+    });
+
+    const expected = {
+      ship: {
+        name: 'USS Delaware',
+        commissioned: '1910-04-04'
+      }
+    };
+
+    const req = Query.resolve( undefined, params );
+
+    req.then(
+      res => {
+        assert.deepEquals( res, expected, 'The expected data should be returned.' );
+        assert.end();
+      },
+      err => assert.end( err )
+    );
   });
 
   sub.test( "...should resolve to null if the source is null.", assert => {
