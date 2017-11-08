@@ -6,7 +6,8 @@ const defaultFieldSource = ( parent, fieldName ) => {
 
 export default function ObjectType({ name, fields = {} } = {}) {
   return {
-    resolve( source, query ) {
+    // TODO: Rename to "execute" to avoid confusion. Fields will have custom "resolvers."
+    resolve( source, query, context = {} ) {
       const keys = Object.keys( query );
 
       // If the source is null, then do not proceed with deeper resolution.
@@ -28,8 +29,8 @@ export default function ObjectType({ name, fields = {} } = {}) {
 
         // TODO: Validate query arguments: queryParams.args should match fieldDef.args.
 
-        return Promise.resolve( fieldSource && fieldSource( source, queryParams.args ) || defaultFieldSource( source, key ) )
-          .then( value => fieldType.resolve( value, typeof queryParams === 'object' ? queryParams.fields : queryParams ) )
+        return Promise.resolve( fieldSource && fieldSource( source, queryParams.args, context ) || defaultFieldSource( source, key ) )
+          .then( value => fieldType.resolve( value, typeof queryParams === 'object' ? queryParams.fields : queryParams, context ) )
           .then( value => [
             key,
             value
