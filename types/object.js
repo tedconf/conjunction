@@ -8,6 +8,7 @@ export default function ObjectType({ name, fields = {} } = {}) {
   return {
     // TODO: Rename to "execute" to avoid confusion. Fields will have custom "resolvers."
     resolve( source, query, context = {} ) {
+      const _fields = typeof fields === 'function' ? fields() : fields;
       const keys = Object.keys( query );
 
       // If the source is null, then do not proceed with deeper resolution.
@@ -20,10 +21,12 @@ export default function ObjectType({ name, fields = {} } = {}) {
       // source (if that node has fields).
 
       const resolvers = keys.map( key => {
-        const fieldDef = fields[key];
+        const fieldDef = _fields[key];
         const queryParams = query[key];
 
-        if ( !fieldDef || !fieldDef.type ) return Promise.reject( new Error( `Could not resolve a query including an undefined field. The field '${ key }' is not defined on ${ name }(${ Object.keys( fields ).join( ', ' ) }).` ) );
+        if ( !fieldDef || !fieldDef.type ) {
+          return Promise.reject( new Error( `Could not resolve a query including an undefined field. The field '${ key }' is not defined on ${ name }(${ Object.keys( _fields ).join( ', ' ) }).` ) );
+        }
 
         const { source: fieldSource, type: fieldType } = fieldDef;
 
@@ -42,10 +45,6 @@ export default function ObjectType({ name, fields = {} } = {}) {
           ...acc,
           [key]: value
         }), {}) )
-    },
-
-    field( name ) {
-      return fields[name];
     }
   };
 }
