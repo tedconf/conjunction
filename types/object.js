@@ -32,6 +32,10 @@ export default function ObjectType({ name, fields = {} } = {}) {
 
         // TODO: Validate query arguments: queryParams.args should match fieldDef.args.
 
+        if ( typeof source === 'undefined' ) {
+          console.warn( `Attempt to resolve field '${ key }' on ${ name } with undefined source.` )
+        }
+
         return Promise.resolve( fieldSource && fieldSource( source, queryParams.args, context ) || defaultFieldSource( source, key ) )
           .then( value => fieldType.resolve( value, typeof queryParams === 'object' ? queryParams.fields : queryParams, context ) )
           .then( value => [
