@@ -5,24 +5,6 @@ import StringType from './string';
 import IntType from './int';
 
 test( "connect/types/object...", sub => {
-  sub.test( "...should expose fields via a .field() method.", assert => {
-    const Sample = ObjectType({
-      name: 'Sample',
-      fields: {
-        title: {
-          type: StringType
-        }
-      }
-    });
-
-    assert.equals( typeof Sample.field, 'function', 'A .field() method should be exposed.' );
-
-    const titleField = Sample.field( 'title' );
-
-    assert.deepEquals( titleField, { type: StringType }, 'The field definition should be returned.' );
-    assert.end();
-  });
-
   sub.test( "...should expose a .resolve() method.", assert => {
     const Sample = ObjectType({
       name: 'Sample'
