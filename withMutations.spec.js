@@ -8,8 +8,8 @@ import {
   providerShape
 } from './provider';
 
-test( "connect/withMutations...", sub => {
-  sub.test( "...should expose a mutate method as a property on the wrapped component.", assert => {
+test.only( "connect/withMutations...", sub => {
+  sub.test( "...should expose mutate() as a property on the wrapped component.", assert => {
     class Spy extends Component {
       render() {
         return (
@@ -26,7 +26,8 @@ test( "connect/withMutations...", sub => {
       getChildContext() {
         return {
           [PROVIDER_KEY]: {
-            connect: val => val
+            connect: val => val,
+            mutate: mutation => Promise.resolve({ mutation })
           }
         };
       }
@@ -40,7 +41,13 @@ test( "connect/withMutations...", sub => {
 
     assert.equal( typeof withMutations, 'function', 'The withMutations factory should be defined.' );
 
-    const Mock = withMutations()( Spy );
+    const withTestMutations = withMutations({
+      updateRecord: args => ({
+        args
+      })
+    });
+
+    const Mock = withTestMutations( Spy );
 
     const wrapper = mount(
       <MockProvider>
@@ -51,6 +58,27 @@ test( "connect/withMutations...", sub => {
     assert.equal( wrapper.find( Spy ).length, 1, 'The wrapped component should be rendered.' );
     assert.equal( typeof wrapper.find( Spy ).prop( 'mutate' ), 'function', 'The wrapped component should receive mutate() as a property.' )
 
-    assert.end();
+    const mutate = wrapper.find( Spy ).prop( 'mutate' );
+    const req = mutate( 'updateRecord', { x: 'X000' });
+
+    assert.equal( typeof req.then, 'function', 'The mutate() method should return a promise.' );
+
+    const expectedRes = {
+      mutation: {
+        updateRecord: {
+          args: {
+            x: 'X000'
+          }
+        }
+      }
+    };
+
+    req.then(
+      res => {
+        assert.deepEqual( res, expectedRes, 'The provider should receive resolved mutation (args applied to mutation thunk).' );
+        assert.end();
+      },
+      err => assert.end( err )
+    );
   });
 });
