@@ -6,6 +6,17 @@ import {
   providerShape
 } from './provider';
 
+/**
+ * State:
+ *  - pending
+ *  - errors
+ *  - complete
+ *
+ * Actions:
+ *  - mutate( String: mutation, Object: args ) : Promise
+ *  - clear/reset
+ */
+
 export const withMutations = mutations => WrappedComponent => {
   class Wrapper extends Component {
     static contextTypes = {
