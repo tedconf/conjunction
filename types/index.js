@@ -4,6 +4,8 @@ import StringType from './string';
 import IntType from './int';
 import FloatType from './float';
 
+export * from './InputObjectType';
+
 export {
   ObjectType,
   ArrayType,

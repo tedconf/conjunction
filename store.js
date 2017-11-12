@@ -14,6 +14,12 @@ export default function Store( schema ) {
           console.log( 'Released!' );
         }
       };
+    },
+
+    mutate( mutation ) {
+      console.log( 'Mutate:', mutation );
+
+      return schema.mutate( mutation );
     }
   };
 }

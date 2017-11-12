@@ -7,7 +7,8 @@ import Store from './store';
 export const PROVIDER_KEY = 'data';
 
 export const providerShape = PropTypes.shape({
-  connect: PropTypes.func.isRequired
+  connect: PropTypes.func.isRequired,
+  mutate: PropTypes.func.isRequired
 }).isRequired;
 
 export class DataProvider extends Component {
@@ -30,7 +31,8 @@ export class DataProvider extends Component {
   getChildContext() {
     return {
       [PROVIDER_KEY]: {
-        connect: ( query, receiver ) => this.store.connect( query, receiver )
+        connect: ( query, receiver ) => this.store.connect( query, receiver ),
+        mutate: ( mutation ) => this.store.mutate( mutation )
       }
     };
   }

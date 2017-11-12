@@ -36,7 +36,7 @@ export default function ObjectType({ name, fields = {} } = {}) {
           console.warn( `Attempt to resolve field '${ key }' on ${ name } with undefined source.` )
         }
 
-        return Promise.resolve( fieldSource && fieldSource( source, queryParams.args, context ) || defaultFieldSource( source, key ) )
+        return Promise.resolve( fieldSource ? fieldSource( source, queryParams.args, context ) : defaultFieldSource( source, key ) )
           .then( value => fieldType.resolve( value, typeof queryParams === 'object' ? queryParams.fields : queryParams, context ) )
           .then( value => [
             key,
