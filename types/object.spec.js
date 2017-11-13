@@ -1,6 +1,7 @@
 import test from 'tape';
 
 import ObjectType from './object';
+import InputObjectType from './InputObjectType';
 import StringType from './string';
 import IntType from './int';
 
@@ -213,7 +214,11 @@ test( "connect/types/object...", sub => {
           args: {
             id: IntType
           },
-          source: ( _, { id }) => Promise.resolve( registry[id] )
+          source: ( _, { id }) => {
+            assert.equals( id, 1011, 'The argument should be passed to the resolver.' );
+
+            return Promise.resolve( registry[id] );
+          }
         }
       }
     });
@@ -230,6 +235,94 @@ test( "connect/types/object...", sub => {
     req.then(
       res => {
         assert.deepEquals( res, expected, 'The expected data should be returned.' );
+        assert.end();
+      },
+      err => assert.end( err )
+    );
+  });
+
+  sub.test( "...should resolve query/mutation arguments before passing to the field source.", assert => {
+    const Person = ObjectType({
+      name: 'Person',
+      fields: {
+        name: {
+          type: StringType
+        },
+        age: {
+          type: IntType
+        }
+      }
+    });
+
+    const PersonInput = InputObjectType({
+      name: 'PersonInput',
+      fields: {
+        name: {
+          type: StringType,
+          resolve: root => `${ root.first_name } ${ root.last_name }`
+        },
+        age: {
+          type: StringType
+        }
+      }
+    });
+
+    const Registration = ObjectType({
+      name: 'Registration',
+      fields: {
+        attendee: {
+          type: Person
+        }
+      }
+    });
+
+    const MutationType = ObjectType({
+      name: 'MutationType',
+      fields: {
+        addRegistration: {
+          args: {
+            attendee: PersonInput
+          },
+          type: Registration,
+          source: ( _, { attendee }) => Promise.resolve({ attendee })
+        }
+      }
+    });
+
+    const mutation = {
+      addRegistration: {
+        args: {
+          attendee: {
+            first_name: 'George',
+            last_name: 'Jetson',
+            age: 122
+          }
+        },
+        fields: {
+          attendee: {
+            fields: {
+              name: true,
+              age: true
+            }
+          }
+        }
+      }
+    };
+
+    const req = MutationType.resolve( undefined, mutation );
+
+    const expected = {
+      addRegistration: {
+        attendee: {
+          name: 'George Jetson',
+          age: 122
+        }
+      }
+    };
+
+    req.then(
+      res => {
+        assert.deepEquals( res, expected, 'The attendee data should be transformed via the InputType.' );
         assert.end();
       },
       err => assert.end( err )

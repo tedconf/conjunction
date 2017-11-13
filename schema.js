@@ -5,8 +5,6 @@ export function Schema({ query, mutation }) {
     },
 
     mutate( mutationDef, context = {} ) {
-      console.log( 'Schema.mutate:', mutation, mutationDef );
-      
       return mutation.resolve( undefined, mutationDef, context );
     }
   };

@@ -8,7 +8,7 @@ import {
   providerShape
 } from './provider';
 
-test.only( "connect/withMutations...", sub => {
+test( "connect/withMutations...", sub => {
   sub.test( "...should expose mutate() as a property on the wrapped component.", assert => {
     class Spy extends Component {
       render() {
