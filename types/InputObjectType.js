@@ -1,6 +1,6 @@
 export const InputObjectType = ({ name, fields }) => {
   // TODO: Validate field definitions.
-  
+
   return {
     resolve: ( input ) => {
       const fieldDefs = typeof fields === 'function' ? fields() : fields;
@@ -11,14 +11,19 @@ export const InputObjectType = ({ name, fields }) => {
         throw new Error( `Invalid input for ${ name }.resolve(): ${ typeof input }` );
       }
 
-      return Object.keys( fieldDefs ).reduce( ( acc, key ) => {
-        const fieldDef = fieldDefs[key];
+      const resolvers = Object.keys( fieldDefs )
+        .map( key => Promise.resolve( fieldDefs[key].resolve ? fieldDefs[key].resolve( input ) : input[key] )
+          .then( value => ([
+            key,
+            value
+          ]))
+        );
 
-        return {
+      return Promise.all( resolvers )
+        .then( responses => responses.reduce( ( acc, [key, value] ) => ({
           ...acc,
-          [key]: fieldDef.resolve ? fieldDef.resolve( input ) : input[key]
-        };
-      }, {});
+          [key]: value
+        }), {}));
     }
   };
 }
