@@ -1,6 +1,6 @@
 import test from 'tape';
 
-import ObjectType from './object';
+import ObjectType from './ObjectType';
 import ArrayType from './array';
 import StringType from './string';
 

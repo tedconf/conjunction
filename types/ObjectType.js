@@ -20,7 +20,7 @@ export const resolveArgs = ( args = {}, argDefs = {} ) => {
     }), {}));
 };
 
-export default function ObjectType({ name, fields = {} } = {}) {
+export function ObjectType({ name, fields = {} } = {}) {
   return {
     // TODO: Rename to "execute" to avoid confusion. Fields will have custom "resolvers."
     resolve( source, query, context = {} ) {
@@ -76,3 +76,5 @@ export default function ObjectType({ name, fields = {} } = {}) {
     }
   };
 }
+
+export default ObjectType;

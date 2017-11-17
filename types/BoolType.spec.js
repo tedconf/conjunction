@@ -1,6 +1,8 @@
 import test from 'tape';
 
-import BoolType from './BoolType';
+import {
+  BoolType
+} from './BoolType';
 
 test( "connect/types/BoolType...", sub => {
   sub.test( "...should expose a .resolve() method that returns the source.", assert => {

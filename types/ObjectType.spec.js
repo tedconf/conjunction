@@ -1,11 +1,11 @@
 import test from 'tape';
 
-import ObjectType from './object';
+import ObjectType from './ObjectType';
 import InputObjectType from './InputObjectType';
 import StringType from './string';
 import IntType from './int';
 
-test( "connect/types/object...", sub => {
+test( "connect/types/ObjectType...", sub => {
   sub.test( "...should expose a .resolve() method.", assert => {
     const Sample = ObjectType({
       name: 'Sample'
