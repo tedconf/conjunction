@@ -20,7 +20,7 @@ test( "connect/types/array...", sub => {
       fields: {
         books: {
           type: ArrayType( Book ),
-          source: () => Promise.resolve([
+          resolve: () => Promise.resolve([
             {
               title: 'JavaScript: The Good Parts'
             },

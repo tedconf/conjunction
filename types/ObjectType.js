@@ -22,7 +22,6 @@ export const resolveArgs = ( args = {}, argDefs = {} ) => {
 
 export function ObjectType({ name, fields = {} } = {}) {
   return {
-    // TODO: Rename to "execute" to avoid confusion. Fields will have custom "resolvers."
     resolve( source, query, context = {} ) {
       console.log( `ObjectType[${ name }].resolve():`, source, query );
 
@@ -51,7 +50,7 @@ export function ObjectType({ name, fields = {} } = {}) {
           return Promise.reject( new Error( `Could not resolve a query including an undefined field. The field '${ key }' is not defined on ${ name }(${ Object.keys( _fields ).join( ', ' ) }).` ) );
         }
 
-        const { source: fieldSource, type: fieldType, args: fieldArgs } = fieldDef;
+        const { resolve: fieldResolver, type: fieldType, args: fieldArgs } = fieldDef;
 
         // TODO: Validate query arguments: queryParams.args should match fieldDef.args.
 
@@ -60,7 +59,7 @@ export function ObjectType({ name, fields = {} } = {}) {
         }
 
         return resolveArgs( queryParams.args, fieldArgs )
-          .then( args => fieldSource ? fieldSource( source, args, context ) : defaultFieldResolver( source, key ) )
+          .then( args => fieldResolver ? fieldResolver( source, args, context ) : defaultFieldResolver( source, key ) )
           .then( value => fieldType.resolve( value, typeof queryParams === 'object' ? queryParams.fields : queryParams, context ) )
           .then( value => [
             key,

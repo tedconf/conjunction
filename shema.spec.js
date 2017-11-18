@@ -27,7 +27,7 @@ test( "connect/schema...", sub => {
       fields: {
         user: {
           type: User,
-          source: () => Promise.resolve({ name: 'Leroy Jetson' })
+          resolve: () => Promise.resolve({ name: 'Leroy Jetson' })
         }
       }
     });

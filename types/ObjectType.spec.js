@@ -111,7 +111,7 @@ test( "connect/types/ObjectType...", sub => {
       );
   });
 
-  sub.test( "...should resolve custom field sources.", assert => {
+  sub.test( "...should apply custom field resolvers.", assert => {
     const fakeUser = {
       name: 'Judy Jetson',
       birthdate: '2130-03-20',
@@ -138,7 +138,7 @@ test( "connect/types/ObjectType...", sub => {
       fields: {
         user: {
           type: User,
-          source: () => Promise.resolve( fakeUser )
+          resolve: () => Promise.resolve( fakeUser )
         }
       }
     });
@@ -162,14 +162,14 @@ test( "connect/types/ObjectType...", sub => {
     QueryRoot.resolve( undefined, query )
       .then(
         res => {
-          assert.deepEquals( res, expected, 'The nested query should be correctly resolved based on the custom source.' );
+          assert.deepEquals( res, expected, 'The nested query should be correctly resolved based on the custom resolver.' );
           assert.end();
         },
         err => assert.end( err )
       );
   });
 
-  sub.test( "...should pass field arguments from the query to the field source.", assert => {
+  sub.test( "...should pass field arguments from the query to the field resolver.", assert => {
     // https://en.wikipedia.org/wiki/List_of_battleships_of_the_United_States_Navy
     const registry = {
       1011: {
@@ -214,7 +214,7 @@ test( "connect/types/ObjectType...", sub => {
           args: {
             id: IntType
           },
-          source: ( _, { id }) => {
+          resolve: ( _, { id }) => {
             assert.equals( id, 1011, 'The argument should be passed to the resolver.' );
 
             return Promise.resolve( registry[id] );
@@ -241,7 +241,7 @@ test( "connect/types/ObjectType...", sub => {
     );
   });
 
-  sub.test( "...should resolve query/mutation arguments before passing to the field source.", assert => {
+  sub.test( "...should resolve query/mutation arguments before passing to the field resolver.", assert => {
     const Person = ObjectType({
       name: 'Person',
       fields: {
@@ -284,7 +284,7 @@ test( "connect/types/ObjectType...", sub => {
             attendee: PersonInput
           },
           type: Registration,
-          source: ( _, { attendee }) => Promise.resolve({ attendee })
+          resolve: ( _, { attendee }) => Promise.resolve({ attendee })
         }
       }
     });
@@ -353,7 +353,7 @@ test( "connect/types/ObjectType...", sub => {
       );
   });
 
-  sub.test( "...should reject the returned promise if a nested source rejects.", assert => {
+  sub.test( "...should reject the returned promise if a nested resolver rejects.", assert => {
     const Session = ObjectType({
       name: 'Session',
       fields: {
@@ -368,7 +368,7 @@ test( "connect/types/ObjectType...", sub => {
       fields: {
         session: {
           type: Session,
-          source: () => Promise.reject({
+          resolve: () => Promise.reject({
             message: 'Session could not be loaded.'
           })
         }

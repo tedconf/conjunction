@@ -24,7 +24,7 @@ test( "connect/store#query...", sub => {
       fields: {
         user: {
           type: User,
-          source: () => Promise.reject({ message: 'Failure!' })
+          resolve: () => Promise.reject({ message: 'Failure!' })
         }
       }
     });
