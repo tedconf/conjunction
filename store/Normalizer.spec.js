@@ -40,7 +40,12 @@ test.only( "connect/store/Normalizer.normalize()...", sub => {
         name: 'TEDxSebastopol',
         venue: {
           id: 'dmVudWVzOjAwMDAy',
-          name: 'Ragle Ranch Park'
+          name: 'Ragle Ranch Park',
+          address: {
+            city: 'Sebastopol',
+            state: 'California',
+            postal_cide: '95472'
+          }
         }
       }
     };
@@ -65,7 +70,16 @@ test.only( "connect/store/Normalizer.normalize()...", sub => {
       'dmVudWVzOjAwMDAy': {
         __key: 'dmVudWVzOjAwMDAy',
         id: 'dmVudWVzOjAwMDAy',
-        name: 'Ragle Ranch Park'
+        name: 'Ragle Ranch Park',
+        address: {
+          __ref: 'dmVudWVzOjAwMDAy:address'
+        }
+      },
+      'dmVudWVzOjAwMDAy:address': {
+        __key: 'dmVudWVzOjAwMDAy:address',
+        city: 'Sebastopol',
+        state: 'California',
+        postal_cide: '95472'
       }
     };
 
