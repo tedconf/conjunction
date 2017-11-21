@@ -32,4 +32,44 @@ test.only( "connect/store/Normalizer.normalize()...", sub => {
 
     assert.end();
   });
+
+  sub.test( "...traversal.", assert => {
+    const data = {
+      group: {
+        id: 'R3JvdXA6MDAwMDE=',
+        name: 'TEDxSebastopol',
+        venue: {
+          id: 'dmVudWVzOjAwMDAy',
+          name: 'Ragle Ranch Park'
+        }
+      }
+    };
+
+    const { records } = normalize( { key: ROOT_ID }, data );
+
+    const expectedRecords = {
+      [ROOT_ID]: {
+        __key: ROOT_ID,
+        group: {
+          __ref: 'R3JvdXA6MDAwMDE='
+        }
+      },
+      'R3JvdXA6MDAwMDE=': {
+        __key: 'R3JvdXA6MDAwMDE=',
+        id: 'R3JvdXA6MDAwMDE=',
+        name: 'TEDxSebastopol',
+        venue: {
+          __ref: 'dmVudWVzOjAwMDAy'
+        }
+      },
+      'dmVudWVzOjAwMDAy': {
+        __key: 'dmVudWVzOjAwMDAy',
+        id: 'dmVudWVzOjAwMDAy',
+        name: 'Ragle Ranch Park'
+      }
+    };
+
+    assert.deepEqual( records, expectedRecords, 'The traversal should collect the expected records.' );
+    assert.end();
+  });
 });

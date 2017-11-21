@@ -1,5 +1,10 @@
 // @flow
-import { mapObject } from 'util/object';
+import mergeDeepLeft from 'ramda/src/mergeDeepLeft';
+
+import {
+  mapObject,
+  reduceObject
+} from 'util/object';
 
 type Node = {
   id?: string
@@ -37,7 +42,6 @@ type NormalizedResponse = {
 export const ROOT_ID = '__root';
 
 export const normalize = ( selector: Selector, node: Node ): NormalizedResponse => {
-  console.log( 'normalize():', selector, node );
   const key = node.id || selector.key;
   const ref = { __ref: key };
 
@@ -69,8 +73,9 @@ export const normalize = ( selector: Selector, node: Node ): NormalizedResponse 
 
   return {
     ref,
-    records: {
-      [key]: record
-    }
+    records: mergeDeepLeft(
+      reduceObject( branches, ( acc, { records }) => mergeDeepLeft( acc, records ), {}),
+      { [key]: record }
+    )
   };
 }
