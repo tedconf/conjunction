@@ -52,7 +52,7 @@ export const withData = ( query ) => WrappedComponent => {
 
     componentWillUnmount() {
       // Release provider connection.
-      this.connection.release();
+      this.connection.release(); // TODO: Change to .dispose().
     }
   }
 
