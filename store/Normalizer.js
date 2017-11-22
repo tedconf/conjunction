@@ -6,14 +6,14 @@ import {
   reduceObject
 } from 'util/object';
 
-type Node = {
-  id?: string
-};
-
 type RecordKey = string;
 
+type Payload = {
+  id?: RecordKey
+};
+
 type Selector = {
-  key: string
+  key: RecordKey
 };
 
 type Record = {};
@@ -23,7 +23,7 @@ type RecordReference = {
 }
 
 type RecordRepository = {
-  [key: string]: Record
+  [key: RecordKey]: Record
 };
 
 type NormalizedResponse = {
@@ -41,13 +41,13 @@ type NormalizedResponse = {
 
 export const ROOT_ID = '__root';
 
-export const normalize = ( selector: Selector, node: Node ): NormalizedResponse => {
-  const key = node.id || selector.key;
+export const normalize = ( selector: Selector, payload: Payload ): NormalizedResponse => {
+  const key = payload.id || selector.key;
   const ref = { __ref: key };
 
-  const branches = mapObject( node, ( fieldNode, fieldName ) => {
+  const branches = mapObject( payload, ( fieldNode, fieldName ) => {
     if ( typeof fieldNode !== 'object' ) {
-      // TODO: This would be more precise if type was determined by the schema, rather than inspection of the node.
+      // TODO: This would be more precise if type was determined by the schema, rather than inspection of the payload.
       return {
         ref: fieldNode,
         records: {}
