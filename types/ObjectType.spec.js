@@ -145,7 +145,7 @@ test( "connect/types/ObjectType...", sub => {
 
     const query = {
       user: {
-        fields: {
+        __fields: {
           name: true,
           birthdate: true
         }
@@ -181,10 +181,10 @@ test( "connect/types/ObjectType...", sub => {
 
     const params = {
       ship: {
-        args: {
+        __args: {
           id: 1011
         },
-        fields: {
+        __fields: {
           name: true,
           commissioned: true
         }
@@ -291,16 +291,16 @@ test( "connect/types/ObjectType...", sub => {
 
     const mutation = {
       addRegistration: {
-        args: {
+        __args: {
           attendee: {
             first_name: 'George',
             last_name: 'Jetson',
             age: 122
           }
         },
-        fields: {
+        __fields: {
           attendee: {
-            fields: {
+            __fields: {
               name: true,
               age: true
             }
@@ -375,7 +375,7 @@ test( "connect/types/ObjectType...", sub => {
       }
     });
 
-    const request = QueryRoot.resolve( undefined, { session: { fields: { live: true } } } );
+    const request = QueryRoot.resolve( undefined, { session: { __fields: { live: true } } } );
 
     assert.equals( typeof request.then, 'function', 'Should return a promise.' );
 

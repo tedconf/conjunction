@@ -6,7 +6,7 @@ import {
   normalize
 } from './Normalizer';
 
-test.only( "connect/store/Normalizer.normalize()...", sub => {
+test( "connect/store/Normalizer.normalize()...", sub => {
   sub.test( "...root.", assert => {
     const data = {
       group: {

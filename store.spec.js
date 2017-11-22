@@ -35,7 +35,7 @@ test( "connect/store#query...", sub => {
 
     const query = {
       user: {
-        fields: {
+        __fields: {
           name: true
         }
       }

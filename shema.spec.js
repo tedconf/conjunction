@@ -40,7 +40,7 @@ test( "connect/schema...", sub => {
 
     const q = {
       user: {
-        fields: {
+        __fields: {
           name: true
         }
       }

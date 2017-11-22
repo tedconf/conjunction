@@ -58,9 +58,9 @@ export function ObjectType({ name, fields = {} } = {}) {
           console.warn( `Attempt to resolve field '${ key }' on ${ name } with undefined source.` )
         }
 
-        return resolveArgs( queryParams.args, fieldArgs )
+        return resolveArgs( queryParams.__args, fieldArgs )
           .then( args => fieldResolver ? fieldResolver( source, args, context ) : defaultFieldResolver( source, key ) )
-          .then( value => fieldType.resolve( value, typeof queryParams === 'object' ? queryParams.fields : queryParams, context ) )
+          .then( value => fieldType.resolve( value, typeof queryParams === 'object' ? queryParams.__fields : queryParams, context ) )
           .then( value => [
             key,
             value
