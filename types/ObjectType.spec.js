@@ -35,8 +35,10 @@ test( "connect/types/ObjectType...", sub => {
     };
 
     const query = {
-      title: true,
-      collector: true
+      __fields: {
+        title: true,
+        collector: true
+      }
     };
 
     const request = Sample.resolve( source, query );
@@ -61,7 +63,9 @@ test( "connect/types/ObjectType...", sub => {
     });
 
     const query = {
-      nodef: true
+      __fields: {
+        nodef: true
+      }
     };
 
     Sample.resolve( undefined, query )
@@ -97,8 +101,10 @@ test( "connect/types/ObjectType...", sub => {
     };
 
     const query = {
-      name: true,
-      birthdate: true
+      __fields: {
+        name: true,
+        birthdate: true
+      }
     };
 
     Person.resolve( source, query )
@@ -144,10 +150,12 @@ test( "connect/types/ObjectType...", sub => {
     });
 
     const query = {
-      user: {
-        __fields: {
-          name: true,
-          birthdate: true
+      __fields: {
+        user: {
+          __fields: {
+            name: true,
+            birthdate: true
+          }
         }
       }
     };
@@ -180,13 +188,15 @@ test( "connect/types/ObjectType...", sub => {
     };
 
     const params = {
-      ship: {
-        __args: {
-          id: 1011
-        },
-        __fields: {
-          name: true,
-          commissioned: true
+      __fields: {
+        ship: {
+          __args: {
+            id: 1011
+          },
+          __fields: {
+            name: true,
+            commissioned: true
+          }
         }
       }
     };
@@ -290,19 +300,21 @@ test( "connect/types/ObjectType...", sub => {
     });
 
     const mutation = {
-      addRegistration: {
-        __args: {
-          attendee: {
-            first_name: 'George',
-            last_name: 'Jetson',
-            age: 122
-          }
-        },
-        __fields: {
-          attendee: {
-            __fields: {
-              name: true,
-              age: true
+      __fields: {
+        addRegistration: {
+          __args: {
+            attendee: {
+              first_name: 'George',
+              last_name: 'Jetson',
+              age: 122
+            }
+          },
+          __fields: {
+            attendee: {
+              __fields: {
+                name: true,
+                age: true
+              }
             }
           }
         }
@@ -340,7 +352,9 @@ test( "connect/types/ObjectType...", sub => {
     });
 
     const query = {
-      a: true
+      __fields: {
+        a: true
+      }
     };
 
     Sample.resolve( null, query )
@@ -375,7 +389,17 @@ test( "connect/types/ObjectType...", sub => {
       }
     });
 
-    const request = QueryRoot.resolve( undefined, { session: { __fields: { live: true } } } );
+    const fragment = {
+      __fields: {
+        session: {
+          __fields: {
+            live: true
+          }
+        }
+      }
+    };
+
+    const request = QueryRoot.resolve( undefined, fragment );
 
     assert.equals( typeof request.then, 'function', 'Should return a promise.' );
 

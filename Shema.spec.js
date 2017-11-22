@@ -39,9 +39,11 @@ test( "connect/schema...", sub => {
     assert.equals( typeof schema.query, 'function', 'The schema should expose a .query() method.' );
 
     const q = {
-      user: {
-        __fields: {
-          name: true
+      __fields: {
+        user: {
+          __fields: {
+            name: true
+          }
         }
       }
     };

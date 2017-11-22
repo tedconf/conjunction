@@ -33,9 +33,11 @@ test( "connect/types/array...", sub => {
     });
 
     const query = {
-      books: {
-        __fields: {
-          title: true
+      __fields: {
+        books: {
+          __fields: {
+            title: true
+          }
         }
       }
     };
