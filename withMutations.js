@@ -4,7 +4,7 @@ import { getDisplayName } from 'util/hoc';
 import {
   PROVIDER_KEY,
   providerShape
-} from './provider';
+} from './Provider';
 
 /**
  * State:

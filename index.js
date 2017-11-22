@@ -1,4 +1,5 @@
 export * from './Provider';
 export * from './Store';
+export * from './Schema';
 export * from './withData';
 export * from './withMutations';
