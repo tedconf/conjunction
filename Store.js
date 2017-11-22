@@ -27,11 +27,17 @@ export type Repository = {
 };
 
 export type Snapshot = {
+  selector?: Selector,
   data: mixed,
   nodes: Array<RecordKey>
 };
 
-export const Store = () => {
+export type StoreInterface = {
+  put: ( Repository ) => void,
+  get: ( Selector ) => Snapshot
+};
+
+export const Store = (): StoreInterface => {
   let records: Repository = {};
 
   function resolveField( prop: mixed, fragment: Fragment | true ): Snapshot {
@@ -105,7 +111,10 @@ export const Store = () => {
     get( selector: Selector ): Snapshot {
       const { key, fragment } = selector;
 
-      return resolveNode( key, fragment );
+      return {
+        selector,
+        ...resolveNode( key, fragment )
+      };
     }
   };
 };

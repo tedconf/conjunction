@@ -69,6 +69,7 @@ test( "connect/store/Store...", sub => {
     };
 
     const expected = {
+      selector: { fragment, key: 'R3JvdXA6MDAwMDE=' },
       data: {
         name: 'TEDxSebastopol',
         venues: [

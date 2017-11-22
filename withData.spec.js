@@ -4,19 +4,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  Schema,
-  ObjectType,
-  IntType
-} from './schema';
-
-import {
   withData
-} from './connector';
+} from './withData';
 
 import {
   PROVIDER_KEY,
   providerShape
-} from './provider';
+} from './Provider';
 
 // TODO: Mocking is a code smell... https://medium.com/javascript-scene/mocking-is-a-code-smell-944a70c90a6a
 

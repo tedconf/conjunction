@@ -39,20 +39,17 @@ export const withData = ( query ) => WrappedComponent => {
 
       // Connect to the provider.
       this.connection = provider.connect( typeof query === 'function' ? query( this.props ) : query, {
-        next: res => this.setState( ({ data }) => ({
+        next: data => this.setState({
           loaded: true,
-          data: {
-            ...data,
-            ...res
-          }
-        })),
+          data
+        }),
         error: err => console.error( err )   // TODO: Handle error.
       });
     }
 
     componentWillUnmount() {
       // Release provider connection.
-      this.connection.release(); // TODO: Change to .dispose().
+      this.connection.dispose();
     }
   }
 
