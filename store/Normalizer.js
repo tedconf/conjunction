@@ -54,9 +54,11 @@ export const normalize = ( selector: Selector, node: Node ): NormalizedResponse 
       };
     }
     else if ( Array.isArray( fieldNode ) ) {
+      const nodes = fieldNode.map( ( nodeItem, index ) => normalize({ key: `${ key }:${ index }` }, nodeItem ) );
+
       return {
-        ref: [],
-        records: {}
+        ref: nodes.map( ({ ref }) => ref ),
+        records: nodes.reduce( ( acc, { records }) => mergeDeepLeft( acc, records ), {})
       }
     }
     else {

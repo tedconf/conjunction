@@ -86,4 +86,56 @@ test.only( "connect/store/Normalizer.normalize()...", sub => {
     assert.deepEqual( records, expectedRecords, 'The traversal should collect the expected records.' );
     assert.end();
   });
+
+  sub.test( "...traversal with arrays.", assert => {
+    const data = {
+      group: {
+        id: 'R3JvdXA6MDAwMDE=',
+        name: 'TEDxSebastopol',
+        venues: [
+          {
+            id: 'dmVudWVzOjAwMDAy',
+            name: 'Ragle Ranch Park'
+          },
+          {
+            id: 'dmVudWVzOjAwMDAz',
+            name: 'Ives Park'
+          }
+        ]
+      }
+    };
+
+    const { records } = normalize( { key: ROOT_ID }, data );
+
+    const expectedRecords = {
+      [ROOT_ID]: {
+        __key: ROOT_ID,
+        group: {
+          __ref: 'R3JvdXA6MDAwMDE='
+        }
+      },
+      'R3JvdXA6MDAwMDE=': {
+        __key: 'R3JvdXA6MDAwMDE=',
+        id: 'R3JvdXA6MDAwMDE=',
+        name: 'TEDxSebastopol',
+        venues: [
+          { __ref: 'dmVudWVzOjAwMDAy' },
+          { __ref: 'dmVudWVzOjAwMDAz' }
+        ]
+      },
+      'dmVudWVzOjAwMDAy': {
+        __key: 'dmVudWVzOjAwMDAy',
+        id: 'dmVudWVzOjAwMDAy',
+        name: 'Ragle Ranch Park'
+      },
+      'dmVudWVzOjAwMDAz': {
+        __key: 'dmVudWVzOjAwMDAz',
+        id: 'dmVudWVzOjAwMDAz',
+        name: 'Ives Park'
+      }
+    };
+
+    assert.deepEqual( records, expectedRecords, 'The traversal should collect the expected records.' );
+    assert.end();
+  });
 });
