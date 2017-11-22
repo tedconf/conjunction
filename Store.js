@@ -98,7 +98,7 @@ export const Store = () => {
   }
 
   return {
-    put( updatedRecords: Repository ) {
+    put( updatedRecords: Repository ): void {
       records = updatedRecords;
     },
 
@@ -109,3 +109,5 @@ export const Store = () => {
     }
   };
 };
+
+export default Store;
