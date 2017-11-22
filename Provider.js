@@ -31,7 +31,9 @@ export class Provider extends Component {
   getChildContext() {
     return {
       [PROVIDER_KEY]: {
-        connect: ( query, receiver ) => this.store.connect( query, receiver ),
+        connect: ( query, observer ) => {
+          // FIXME: connect() will no longer pass directly through to the store. Need to implement fetch (query via schema), normalize, and put.
+        },
         mutate: ( mutation ) => this.store.mutate( mutation )
       }
     };
