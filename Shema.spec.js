@@ -4,9 +4,9 @@ import {
   Schema,
   ObjectType,
   StringType
-} from './schema';
+} from './Schema';
 
-test( "connect/schema...", sub => {
+test( "connect/Schema...", sub => {
   sub.test( "...should define a Schema factory.", assert => {
     assert.equals( typeof Schema, 'function', 'Schema should be defined.' );
     assert.end();
