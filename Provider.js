@@ -2,9 +2,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import {
+  Observable
+} from './Rx/Observable';
+
 import { Store } from './Store';
 import type {
-  StoreInterface
+  StoreInterface,
+  Subscription,
+  Observer
 } from './Store';
 
 import {
@@ -25,12 +31,8 @@ type ProviderProps = {
   children: any
 };
 
-type Disposable = {
-  dispose: ( void ) => void
-};
-
 export class Provider extends Component<ProviderProps> {
-  connect: ( any, any ) => Disposable;
+  connect: ( any, any ) => Subscription;
 
   store: StoreInterface;
 
@@ -63,37 +65,18 @@ export class Provider extends Component<ProviderProps> {
     return children ? React.Children.only( children ) : null;
   }
 
-  connect ( query: any, observer: any ): Disposable {
+  connect ( query: any, observer: Observer ): Subscription {
     const { schema } = this.props;
     const store = this.store;
 
-    let disposed = false;
-
-    schema.query( query )
-      .then( payload => {
-        !disposed && observer.next( payload );
-
-        return {
-          ...normalize({ key: ROOT_ID }, payload ),
-          payload
-        };
-      })
-      .then( ({ records, ref }) => {
-        console.log( '[Provider.connect()]', { ref, records } );
+    return Observable
+      .fromPromise( schema.query( query ).then( payload => {
+        const { records } = normalize({ key: ROOT_ID }, payload );
 
         store.put( records );
-        return store.get({ key: ROOT_ID, fragment: query })
-      })
-      .then( snapshot => {
-        console.log( '[Provider.connect()]', { snapshot } );
-      })
-      .catch( err => console.error( err ) );
-
-    return {
-      dispose() {
-        disposed = false;
-      }
-    };
+      }))
+      .concatMap( () => store.changes({ key: ROOT_ID, fragment: query }) )
+      .subscribe( observer );
   }
 }
 

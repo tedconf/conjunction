@@ -98,7 +98,7 @@ test( "connect/store/Store...", sub => {
     assert.end();
   });
 
-  sub.test( "...Store#subscribe()", assert => {
+  sub.test( "...Store#changes()", assert => {
     const records: Repository = {
       'R3JvdXA6MDAwMDE=': {
         __key: 'R3JvdXA6MDAwMDE=',
@@ -137,10 +137,10 @@ test( "connect/store/Store...", sub => {
     const store = Store();
     store.put( records );
 
-    assert.equal( typeof store.subscribe, 'function', 'The .subscribe() method should be defined.' );
+    assert.equal( typeof store.changes, 'function', 'The .subscribe() method should be defined.' );
 
     const events = [];
-    const subscription = store.subscribe({ fragment, key: 'R3JvdXA6MDAwMDE=' }, {
+    const subscription = store.changes({ fragment, key: 'R3JvdXA6MDAwMDE=' }).subscribe({
       next: data => events.push( data ),
       error: err => assert.end( err )
     });

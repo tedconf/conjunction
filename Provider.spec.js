@@ -46,6 +46,6 @@ test( "connect/Provider...", sub => {
       }
     });
 
-    assert.equals( typeof connection.dispose, 'function', 'The .connect() method should return a disposable.' );
+    assert.equals( typeof connection.unsubscribe, 'function', 'The .connect() method should return a subscription.' );
   });
 });

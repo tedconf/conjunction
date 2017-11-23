@@ -1,7 +1,10 @@
 // @flow
 
 import {
-  Subject,
+  Observable
+} from './Rx/Observable';
+
+import {
   BehaviorSubject
 } from './Rx/Subject';
 
@@ -37,19 +40,19 @@ export type Snapshot = {
   nodes: Array<RecordKey>
 };
 
-type Observer = {
+export type Observer = {
   next: ( data: mixed ) => any,
   error: ( err: any ) => any
 };
 
-type Subscription = {
+export type Subscription = {
   unsubscribe: ( void ) => void
 };
 
 export type StoreInterface = {
   put: ( Repository ) => Promise<*>,
   get: ( Selector ) => Snapshot,
-  subscribe: ( Selector, Observer ) => Subscription
+  changes: ( Selector ) => Observable
 };
 
 export const Store = (): StoreInterface => {
@@ -139,22 +142,11 @@ export const Store = (): StoreInterface => {
 
     get,
 
-    subscribe( selector: Selector, observer: Observer ): Subscription {
-      const intermediary = new Subject();
-      const subscription = intermediary.subscribe( observer );
-
+    changes( selector: Selector ): Observable {
       // TODO: Filter updates based on required nodes.
-
-      const innerSubscription = updates.subscribe({
-        next: () => {
-          const { data } = get( selector );
-          intermediary.next( data );
-        }
-      });
-
-      subscription.add( innerSubscription );
-
-      return subscription;
+      return updates
+        .map( () => get( selector ) )
+        .map( ({ data }) => data );
     }
   };
 };

@@ -6,25 +6,20 @@ import {
   reduceObject
 } from 'util/object';
 
-type RecordKey = string;
+import type {
+  RecordKey,
+  Repository
+} from './Store';
 
 type Payload = {
   id?: RecordKey
 };
 
-type Selector = {
-  key: RecordKey
-};
-
-type Record = {};
-
 type RecordReference = {
   __ref: RecordKey
 }
 
-type RecordRepository = {
-  [key: RecordKey]: Record
-};
+type RecordRepository = Repository;
 
 type NormalizedResponse = {
   ref: RecordReference,
@@ -41,7 +36,7 @@ type NormalizedResponse = {
 
 export const ROOT_ID = '__root';
 
-export const normalize = ( selector: Selector, payload: Payload ): NormalizedResponse => {
+export const normalize = ( selector: { key: RecordKey }, payload: Payload ): NormalizedResponse => {
   const key = payload.id || selector.key;
   const ref = { __ref: key };
 
