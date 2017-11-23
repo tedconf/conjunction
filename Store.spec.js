@@ -25,6 +25,78 @@ test( "connect/store/Store...", sub => {
     assert.end();
   });
 
+  sub.test( "...Store#put() should merge updated records.", assert => {
+    const records: Repository = {
+      'R3JvdXA6MDAwMDE=': {
+        __key: 'R3JvdXA6MDAwMDE=',
+        __typename: 'Group',
+        id: 'R3JvdXA6MDAwMDE=',
+        name: 'TEDxSebastopol',
+        venues: [
+          { __ref: 'VmVudWU6MDAwMDI=' },
+          { __ref: 'VmVudWU6MDAwMDM=' }
+        ]
+      },
+      'VmVudWU6MDAwMDI=': {
+        __key: 'VmVudWU6MDAwMDI=',
+        __typename: 'Venue',
+        name: 'Ragle Ranch Park'
+      },
+      'VmVudWU6MDAwMDM=': {
+        __key: 'VmVudWU6MDAwMDM=',
+        __typename: 'Venue',
+        name: 'Ives Park'
+      }
+    };
+
+    const fragment: Fragment = {
+      __on: 'Group',
+      __fields: {
+        name: true,
+        venues: {
+          __fields: {
+            name: true
+          }
+        }
+      }
+    };
+
+    const expected = {
+      selector: { fragment, key: 'R3JvdXA6MDAwMDE=' },
+      data: {
+        name: 'TEDxSebastopol',
+        venues: [
+          {
+            name: 'Ragle Ranch Park'
+          },
+          {
+            name: 'Libby Park'
+          }
+        ]
+      },
+      nodes: [
+        'R3JvdXA6MDAwMDE=',
+        'VmVudWU6MDAwMDI=',
+        'VmVudWU6MDAwMDM='
+      ].sort()
+    };
+
+    const store = Store();
+    store.put( records );
+    store.put({
+      'VmVudWU6MDAwMDM=': {
+        __key: 'VmVudWU6MDAwMDM=',
+        __typename: 'Venue',
+        name: 'Libby Park'
+      }
+    });
+
+    const snapshot = store.get({ fragment, key: 'R3JvdXA6MDAwMDE=' });
+
+    assert.deepEqual( snapshot, expected, 'The selector should be correctly resolved.' );
+    assert.end();
+  });
+
   sub.test( "...Store#get() should be defined.", assert => {
     const store = Store();
     assert.equal( typeof store.get, 'function', '...should be defined.' );

@@ -33,6 +33,7 @@ type ProviderProps = {
 
 export class Provider extends Component<ProviderProps> {
   connect: ( any, any ) => Subscription;
+  mutate: ( any ) => Promise<*>
 
   store: StoreInterface;
 
@@ -44,6 +45,7 @@ export class Provider extends Component<ProviderProps> {
     super( props );
 
     this.connect = this.connect.bind( this );
+    this.mutate = this.mutate.bind( this );
 
     this.store = Store();
   }
@@ -52,9 +54,7 @@ export class Provider extends Component<ProviderProps> {
     return {
       [PROVIDER_KEY]: {
         connect: this.connect,
-        mutate: ( mutation ) => {
-          // FIXME: mutate() also will no longer pass directly through to the store.
-        }
+        mutate: this.mutate
       }
     };
   }
@@ -65,7 +65,7 @@ export class Provider extends Component<ProviderProps> {
     return children ? React.Children.only( children ) : null;
   }
 
-  connect ( query: any, observer: Observer ): Subscription {
+  connect( query: any, observer: Observer ): Subscription {
     const { schema } = this.props;
     const store = this.store;
 
@@ -77,6 +77,28 @@ export class Provider extends Component<ProviderProps> {
       }))
       .concatMap( () => store.changes({ key: ROOT_ID, fragment: query }) )
       .subscribe( observer );
+  }
+
+  mutate( mutation: any ): Promise<*> {
+    const { schema } = this.props;
+    const store = this.store;
+
+    return schema.mutate( mutation )
+      .then( payload => {
+        const { records } = normalize({ key: '__query' }, payload );
+
+        // Filter out the mutation root node(s).
+        const update = Object.keys( records )
+          .filter( key => !key.match( /^__query/ ) )
+          .reduce( ( acc, key ) => ({
+            ...acc,
+            [key]: records[key]
+          }), {});
+
+        store.put( update );
+
+        return payload;
+      });
   }
 }
 

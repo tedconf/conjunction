@@ -1,4 +1,5 @@
 // @flow
+import mergeDeepRight from 'ramda/src/mergeDeepRight';
 
 import {
   Observable
@@ -133,7 +134,7 @@ export const Store = (): StoreInterface => {
 
   return {
     put( updatedRecords: Repository ): Promise<*> {
-      records = updatedRecords;
+      records = mergeDeepRight( records, updatedRecords );
 
       updates.next( updatedRecords );
 
