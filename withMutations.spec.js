@@ -6,7 +6,7 @@ import { withMutations } from './withMutations';
 import {
   PROVIDER_KEY,
   providerShape
-} from './provider';
+} from './Provider';
 
 test( "connect/withMutations...", sub => {
   sub.test( "...should expose mutate() as a property on the wrapped component.", assert => {
