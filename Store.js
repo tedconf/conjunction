@@ -1,5 +1,10 @@
 // @flow
 
+import {
+  Subject,
+  BehaviorSubject
+} from './Rx/Subject';
+
 export type FieldMap = {
   [fieldname: string]: true | Fragment
 };
@@ -32,13 +37,24 @@ export type Snapshot = {
   nodes: Array<RecordKey>
 };
 
+type Observer = {
+  next: ( data: mixed ) => any,
+  error: ( err: any ) => any
+};
+
+type Subscription = {
+  unsubscribe: ( void ) => void
+};
+
 export type StoreInterface = {
-  put: ( Repository ) => void,
-  get: ( Selector ) => Snapshot
+  put: ( Repository ) => Promise<*>,
+  get: ( Selector ) => Snapshot,
+  subscribe: ( Selector, Observer ) => Subscription
 };
 
 export const Store = (): StoreInterface => {
   let records: Repository = {};
+  let updates = new BehaviorSubject({});
 
   function resolveField( prop: mixed, fragment: Fragment | true ): Snapshot {
     // NOTE: This is going to cause problems if types that shouldn't be traversed are represented as arrays (e.g., tuples).
@@ -103,18 +119,42 @@ export const Store = (): StoreInterface => {
     };
   }
 
+  function get( selector: Selector ): Snapshot {
+    const { key, fragment } = selector;
+
+    return {
+      selector,
+      ...resolveNode( key, fragment )
+    };
+  }
+
   return {
-    put( updatedRecords: Repository ): void {
+    put( updatedRecords: Repository ): Promise<*> {
       records = updatedRecords;
+
+      updates.next( updatedRecords );
+
+      return Promise.resolve( null ); // TODO: Handle the case where updates are deferred or batched.
     },
 
-    get( selector: Selector ): Snapshot {
-      const { key, fragment } = selector;
+    get,
 
-      return {
-        selector,
-        ...resolveNode( key, fragment )
-      };
+    subscribe( selector: Selector, observer: Observer ): Subscription {
+      const intermediary = new Subject();
+      const subscription = intermediary.subscribe( observer );
+
+      // TODO: Filter updates based on required nodes.
+
+      const innerSubscription = updates.subscribe({
+        next: () => {
+          const { data } = get( selector );
+          intermediary.next( data );
+        }
+      });
+
+      subscription.add( innerSubscription );
+
+      return subscription;
     }
   };
 };
