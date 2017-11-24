@@ -38,7 +38,7 @@ export const withData = ( query ) => WrappedComponent => {
       const provider = this.context[PROVIDER_KEY];
 
       // Connect to the provider.
-      this.connection = provider.connect( typeof query === 'function' ? query( this.props ) : query, {
+      this.subscription = provider.connect( typeof query === 'function' ? query( this.props ) : query, {
         next: data => this.setState({
           loaded: true,
           data
@@ -48,8 +48,8 @@ export const withData = ( query ) => WrappedComponent => {
     }
 
     componentWillUnmount() {
-      // Release provider connection.
-      this.connection.dispose();
+      // Release provider subscription.
+      this.subscription.unsubscribe();
     }
   }
 
