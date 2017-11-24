@@ -27,7 +27,11 @@ export const withMutations = mutations => WrappedComponent => {
       const provider = this.context[PROVIDER_KEY];
 
       return (
-        <WrappedComponent { ...this.props } mutate={ ( key, params ) => provider.mutate({ [key]: mutations[key]( params ) }) } />
+        <WrappedComponent { ...this.props } mutate={ ( key, params ) => provider.mutate({
+            __fields: {
+              [key]: mutations[key]( params )
+            }
+          }) } />
       );
     }
   }
