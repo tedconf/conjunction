@@ -41,7 +41,7 @@ export const normalize = ( selector: { key: RecordKey }, payload: Payload ): Nor
   const ref = { __ref: key };
 
   const branches = mapObject( payload, ( fieldNode, fieldName ) => {
-    if ( typeof fieldNode !== 'object' ) {
+    if ( typeof fieldNode !== 'object' || fieldNode === null ) {
       // TODO: This would be more precise if type was determined by the schema, rather than inspection of the payload.
       return {
         ref: fieldNode,
