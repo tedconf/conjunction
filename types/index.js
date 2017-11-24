@@ -6,6 +6,7 @@ import FloatType from './float';
 export * from './BoolType';
 export * from './ObjectType';
 export * from './InputObjectType';
+export * from './GUIDType';
 
 export {
   ArrayType,
