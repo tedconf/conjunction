@@ -15,7 +15,7 @@ test( "connect/store/Normalizer.normalize()...", sub => {
       }
     };
 
-    const { ref, records } = normalize( { key: ROOT_ID }, data );
+    const { ref, records } = normalize( data );
 
     const expectedRef = { __ref: ROOT_ID };
     const expectedRoot = {
@@ -50,7 +50,7 @@ test( "connect/store/Normalizer.normalize()...", sub => {
       }
     };
 
-    const { records } = normalize( { key: ROOT_ID }, data );
+    const { records } = normalize( data );
 
     const expectedRecords = {
       [ROOT_ID]: {
@@ -105,7 +105,7 @@ test( "connect/store/Normalizer.normalize()...", sub => {
       }
     };
 
-    const { records } = normalize( { key: ROOT_ID }, data );
+    const { records } = normalize( data );
 
     const expectedRecords = {
       [ROOT_ID]: {

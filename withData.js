@@ -29,6 +29,10 @@ export const withData = ( query ) => WrappedComponent => {
     render() {
       const { data, loaded } = this.state;
 
+      if ( process.env.NODE_ENV !== 'production' ) {
+        console.log( `[${ Wrapper.displayName }]`, data );
+      }
+
       return (
         <WrappedComponent { ...data } loaded={ loaded } { ...this.props } />
       );

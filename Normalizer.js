@@ -36,7 +36,7 @@ type NormalizedResponse = {
 
 export const ROOT_ID = '__root';
 
-export const normalize = ( selector: { key: RecordKey }, payload: Payload ): NormalizedResponse => {
+export const normalize = ( payload: Payload, selector: { key: RecordKey } = { key: ROOT_ID }): NormalizedResponse => {
   const key = payload.id || selector.key;
   const ref = { __ref: key };
 
@@ -49,7 +49,7 @@ export const normalize = ( selector: { key: RecordKey }, payload: Payload ): Nor
       };
     }
     else if ( Array.isArray( fieldNode ) ) {
-      const nodes = fieldNode.map( ( nodeItem, index ) => normalize({ key: `${ key }:${ index }` }, nodeItem ) );
+      const nodes = fieldNode.map( ( nodeItem, index ) => normalize( nodeItem, { key: `${ key }:${ index }` } ) );
 
       return {
         ref: nodes.map( ({ ref }) => ref ),
@@ -57,7 +57,7 @@ export const normalize = ( selector: { key: RecordKey }, payload: Payload ): Nor
       }
     }
     else {
-      return normalize({ key: `${ key }:${ fieldName }` }, fieldNode );
+      return normalize( fieldNode, { key: `${ key }:${ fieldName }` } );
     }
   });
 

@@ -60,6 +60,12 @@ export const Store = (): StoreInterface => {
   let records: Repository = {};
   let updates = new BehaviorSubject({});
 
+  if ( process.env.NODE_ENV !== 'production' ) {
+    updates.subscribe({
+      next: () => console.log( '[store]', records )
+    });
+  }
+
   function resolveField( prop: mixed, fragment: Fragment | true ): Snapshot {
     // NOTE: This is going to cause problems if types that shouldn't be traversed are represented as arrays (e.g., tuples).
     if ( Array.isArray( prop ) ) {
@@ -76,7 +82,7 @@ export const Store = (): StoreInterface => {
           ]
         }), { data: [], nodes: [] });
     }
-    else if ( typeof prop === 'object' && prop != null ) {
+    else if ( typeof prop === 'object' && prop !== null ) {
       // Any object should have been normalized and replaced with a { __ref: '...' }. If that's not the case, it's in error.
       if ( typeof prop.__ref !== 'string' ) throw new Error( `Expected a { __ref: string }. Encountered ${ JSON.stringify( prop, null, 2 ) }` );
       if ( typeof fragment !== 'object' ) throw new Error( 'The fragment must include fields on the object.' );
@@ -96,13 +102,16 @@ export const Store = (): StoreInterface => {
 
     if ( !record ) throw new Error( `Failed to resolve record ${ key }.` );
 
-    const { __key, __typename, ...props } = record;
+    const { __key, __typename, ...props } = record; // eslint-disable-line no-unused-vars
     const { __fields } = fragment;
 
     const { data, nodes } = Object.keys( __fields ).reduce( ( acc, key ) => {
       const prop = props[key];
 
-      if ( typeof prop === 'undefined' ) throw new Error( `Failed to resolve field ${ key } on ${ __typename }[${ __key }]` );
+      // Hypothesis: This should be removed, as there are legitimate cases where a property
+      // on a record will be undefined.
+      //
+      //if ( typeof prop === 'undefined' ) throw new Error( `Failed to resolve field ${ key } on ${ __typename }[${ __key }]` );
 
       const { data, nodes } = resolveField( prop, __fields[key] );
 
@@ -136,7 +145,7 @@ export const Store = (): StoreInterface => {
     put( updatedRecords: Repository ): Promise<*> {
       records = mergeDeepRight( records, updatedRecords );
 
-      updates.next( updatedRecords );
+      updates.next( records );
 
       return Promise.resolve( null ); // TODO: Handle the case where updates are deferred or batched.
     },

@@ -14,7 +14,6 @@ import type {
 } from './Store';
 
 import {
-  ROOT_ID,
   normalize
 } from './Normalizer';
 
@@ -30,6 +29,9 @@ type ProviderProps = {
   schema: any,
   children: any
 };
+
+let __counter = 0;
+const counter = () => ( __counter = __counter + 1 );
 
 export class Provider extends Component<ProviderProps> {
   connect: ( any, any ) => Subscription;
@@ -71,11 +73,22 @@ export class Provider extends Component<ProviderProps> {
 
     return Observable
       .fromPromise( schema.query( query ).then( payload => {
-        const { records } = normalize({ key: ROOT_ID }, payload );
+        console.log( '[connect] Query:', query, payload );
+
+        /**
+         * Making the root key options (defaults to ROOT_ID), to allow introduction
+         * of query-specific roots (to prevent collisions). Assigning a unique root
+         * to each query solves the problem of collisions, while preserving the
+         * core benefits of data consistency, because the unique roots map into
+         * a shared graph based on node ids.
+         */
+        const { records, ref } = normalize( payload, { key: `__query${ counter() }` });
 
         store.put( records );
+
+        return ref;
       }))
-      .concatMap( () => store.changes({ key: ROOT_ID, fragment: query }) )
+      .concatMap( ({ __ref }) => store.changes({ key: __ref, fragment: query }) )
       .subscribe( observer );
   }
 
@@ -85,7 +98,7 @@ export class Provider extends Component<ProviderProps> {
 
     return schema.mutate( mutation )
       .then( payload => {
-        const { records } = normalize({ key: '__query' }, payload );
+        const { records } = normalize( payload, { key: '__query' });
 
         // Filter out the mutation root node(s).
         const update = Object.keys( records )
