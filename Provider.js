@@ -74,8 +74,6 @@ export class Provider extends Component<ProviderProps> {
 
     return Observable
       .fromPromise( schema.query( query ).then( payload => {
-        console.log( '[connect] Query:', query, payload );
-
         /**
          * Making the root key options (defaults to ROOT_ID), to allow introduction
          * of query-specific roots (to prevent collisions). Assigning a unique root

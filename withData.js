@@ -29,10 +29,6 @@ export const withData = ( query ) => WrappedComponent => {
     render() {
       const { data, loaded } = this.state;
 
-      if ( process.env.NODE_ENV !== 'production' ) {
-        console.log( `[${ Wrapper.displayName }]`, data );
-      }
-
       return (
         <WrappedComponent { ...data } loaded={ loaded } { ...this.props } />
       );
@@ -43,10 +39,16 @@ export const withData = ( query ) => WrappedComponent => {
 
       // Connect to the provider.
       this.subscription = provider.connect( typeof query === 'function' ? query( this.props ) : query, {
-        next: data => this.setState({
-          loaded: true,
-          data
-        }),
+        next: data => {
+          if ( process.env.NODE_ENV !== 'production' ) {
+            console.log( `[${ Wrapper.displayName }]`, data );
+          }
+          
+          this.setState({
+            loaded: true,
+            data
+          });
+        },
         error: err => console.error( err )   // TODO: Handle error.
       });
     }

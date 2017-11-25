@@ -28,8 +28,6 @@ export const withMutations = mutations => WrappedComponent => {
 
       return (
         <WrappedComponent { ...this.props } mutate={ ( key, ...params ) => {
-            console.log( '[withMutations.mutate]', key, ...params );
-
             const { __updater, ...def } = mutations[key]( ...params );
 
             const mutation = {
