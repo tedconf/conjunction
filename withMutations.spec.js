@@ -27,7 +27,7 @@ test( "connect/withMutations...", sub => {
         return {
           [PROVIDER_KEY]: {
             connect: val => val,
-            mutate: mutation => Promise.resolve( mutation )
+            mutate: mutation => Promise.resolve( mutation.__fields )
           }
         };
       }
@@ -64,12 +64,8 @@ test( "connect/withMutations...", sub => {
     assert.equal( typeof req.then, 'function', 'The mutate() method should return a promise.' );
 
     const expectedRes = {
-      __fields: {
-        updateRecord: {
-          __args: {
-            x: 'X000'
-          }
-        }
+      __args: {
+        x: 'X000'
       }
     };
 

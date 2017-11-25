@@ -53,7 +53,8 @@ export type Subscription = {
 export type StoreInterface = {
   put: ( Repository ) => Promise<*>,
   get: ( Selector ) => Snapshot,
-  changes: ( Selector ) => Observable
+  changes: ( Selector ) => Observable,
+  update: ( ( Repository ) => Repository ) => Promise<*>
 };
 
 export const Store = (): StoreInterface => {
@@ -132,6 +133,14 @@ export const Store = (): StoreInterface => {
     };
   }
 
+  function put( updatedRecords: Repository ): Promise<*> {
+    records = mergeDeepRight( records, updatedRecords );
+
+    updates.next( records );
+
+    return Promise.resolve( null ); // TODO: Handle the case where updates are deferred or batched.
+  }
+
   function get( selector: Selector ): Snapshot {
     const { key, fragment } = selector;
 
@@ -142,15 +151,13 @@ export const Store = (): StoreInterface => {
   }
 
   return {
-    put( updatedRecords: Repository ): Promise<*> {
-      records = mergeDeepRight( records, updatedRecords );
-
-      updates.next( records );
-
-      return Promise.resolve( null ); // TODO: Handle the case where updates are deferred or batched.
-    },
-
+    put,
     get,
+
+    update( updater: ( Repository ) => Repository ): Promise<*> {
+      return Promise.resolve( updater( records ) )
+        .then( updatedRecords => put( updatedRecords ) );
+    },
 
     changes( selector: Selector ): Observable {
       // TODO: Filter updates based on required nodes.

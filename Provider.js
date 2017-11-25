@@ -10,7 +10,8 @@ import { Store } from './Store';
 import type {
   StoreInterface,
   Subscription,
-  Observer
+  Observer,
+  Repository
 } from './Store';
 
 import {
@@ -92,7 +93,7 @@ export class Provider extends Component<ProviderProps> {
       .subscribe( observer );
   }
 
-  mutate( mutation: any ): Promise<*> {
+  mutate( mutation: any, updater: ( Repository, any ) => Repository ): Promise<*> {
     const { schema } = this.props;
     const store = this.store;
 
@@ -108,9 +109,9 @@ export class Provider extends Component<ProviderProps> {
             [key]: records[key]
           }), {});
 
-        store.put( update );
-
-        return payload;
+        return store.put( update )
+          .then( () => updater && store.update( records => updater( records, payload ) ) )
+          .then( () => payload );
       });
   }
 }
