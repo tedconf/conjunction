@@ -12,12 +12,16 @@ export const InputObjectType = ({ name, fields }) => {
       }
 
       const resolvers = Object.keys( fieldDefs )
-        .map( key => Promise.resolve( fieldDefs[key].resolve ? fieldDefs[key].resolve( input ) : input[key] )
-          .then( value => ([
-            key,
-            value
-          ]))
-        );
+        .map( key => {
+          const { resolve, type } = fieldDefs[key];
+
+          return Promise.resolve( resolve ? resolve( input ) : input[key] )
+            .then( value => type.resolve ? type.resolve( value ) : value )
+            .then( value => ([
+              key,
+              value
+            ]));
+        });
 
       return Promise.all( resolvers )
         .then( responses => responses.reduce( ( acc, [key, value] ) => ({

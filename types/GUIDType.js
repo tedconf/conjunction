@@ -13,6 +13,6 @@ const decode = ( encodedId ) => {
 
 GUIDType.decode = decode;
 
-export const GUIDInputType = ({
-  resolve: id => decode( id ).id
-});
+export const GUIDInputType = {
+  resolve: id => Promise.resolve( id && decode( id ).id )
+};
