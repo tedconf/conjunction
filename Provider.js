@@ -95,6 +95,8 @@ export class Provider extends Component<ProviderProps> {
     const { schema } = this.props;
     const store = this.store;
 
+    // TODO: Need to include the "fat" query on mutation definitions, so that fields don't have to be manually queried to ensure updates.
+
     return schema.mutate( mutation )
       .then( payload => {
         const { records } = normalize( payload, { key: '__query' });
