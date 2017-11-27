@@ -23,7 +23,8 @@ export const PROVIDER_KEY = 'data';
 
 export const providerShape = PropTypes.shape({
   connect: PropTypes.func.isRequired,
-  mutate: PropTypes.func.isRequired
+  mutate: PropTypes.func.isRequired,
+  query: PropTypes.func.isRequired
 }).isRequired;
 
 type ProviderProps = {
@@ -36,7 +37,8 @@ const counter = () => ( __counter = __counter + 1 );
 
 export class Provider extends Component<ProviderProps> {
   connect: ( any, any ) => Subscription;
-  mutate: ( any ) => Promise<*>
+  mutate: ( any ) => Promise<*>;
+  query: ( any ) => Promise<*>;
 
   store: StoreInterface;
 
@@ -49,6 +51,7 @@ export class Provider extends Component<ProviderProps> {
 
     this.connect = this.connect.bind( this );
     this.mutate = this.mutate.bind( this );
+    this.query = this.query.bind( this );
 
     this.store = Store();
   }
@@ -57,7 +60,8 @@ export class Provider extends Component<ProviderProps> {
     return {
       [PROVIDER_KEY]: {
         connect: this.connect,
-        mutate: this.mutate
+        mutate: this.mutate,
+        query: this.query
       }
     };
   }
@@ -113,6 +117,12 @@ export class Provider extends Component<ProviderProps> {
           .then( () => updater && store.update( records => updater( records, payload ) ) )
           .then( () => payload );
       });
+  }
+
+  query( query: any ) {
+    const { schema } = this.props;
+
+    return schema.query( query );
   }
 }
 
