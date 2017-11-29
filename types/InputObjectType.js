@@ -11,6 +11,10 @@ export const InputObjectType = ({ name, fields }) => {
         throw new Error( `Invalid input for ${ name }.resolve(): ${ typeof input }` );
       }
 
+      if ( input === null ) {
+        return Promise.resolve( input );
+      }
+
       const resolvers = Object.keys( fieldDefs )
         .map( key => {
           const { resolve, type } = fieldDefs[key];
