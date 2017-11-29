@@ -40,7 +40,6 @@ export function ObjectType({ name, fields = {} } = {}) {
           const { type: fieldType } = fieldDef;
 
           if ( !fieldType || typeof fieldType !== 'object' || typeof fieldType.resolve !== 'function' ) {
-            console.log( 'Type:', fieldType );
             throw new Error( `Invalid field type on ObjectType[${ name }].${ fieldName }.` );
           }
         });
