@@ -25,7 +25,26 @@ export function ObjectType({ name, fields = {} } = {}) {
     resolve( source, query, context = {} ) {
       console.log( `ObjectType[${ name }].resolve():`, source, query );
 
+      // A fields thunk, if it exists, has to be resolved after all dependencies are defined... so on nextTick (assuming dependencies are loaded synchronously) or later.
       const _fields = typeof fields === 'function' ? fields() : fields;
+
+      // Check ObjectType definition.
+      if ( process.env.NODE_ENV !== 'production' ) {
+        if ( !_fields || typeof _fields !== 'object' ) throw new Error( `An ObjectType[${ name }] cannot be defined without fields.` );
+
+        Object.keys( _fields ).forEach( fieldName => {
+          const fieldDef = _fields[fieldName];
+
+          if ( !fieldDef || typeof fieldDef !== 'object' ) throw new Error( `Field '${ fieldName }' on ObjectType[${ name }] has an invalid definition.` );
+
+          const { type: fieldType } = fieldDef;
+
+          if ( !fieldType || typeof fieldType !== 'object' || typeof fieldType.resolve !== 'function' ) {
+            console.log( 'Type:', fieldType );
+            throw new Error( `Invalid field type on ObjectType[${ name }].${ fieldName }.` );
+          }
+        });
+      }
 
       if ( typeof query !== 'object' ) {
         throw new Error( `Cannot resolve invalid query on ${ name }.` );
