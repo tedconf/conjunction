@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import equals from 'ramda/src/equals';
 
 import { getDisplayName } from 'util/hoc';
 
@@ -35,15 +36,36 @@ export const withData = ( query ) => WrappedComponent => {
     }
 
     componentDidMount() {
+      this.connect( this.props );
+    }
+
+    componentWillReceiveProps( nextProps ) {
+      if ( !equals( this.props, nextProps ) ) {
+        console.log( 'Reconnecting...', this.props, nextProps );
+        this.connect( nextProps );
+      }
+    }
+
+    componentWillUnmount() {
+      // Release provider subscription.
+      this.subscription.unsubscribe();
+    }
+
+    connect( props ) {
       const provider = this.context[PROVIDER_KEY];
 
+      if ( this.subscription ) {
+        // Dispose of prior subscriptions (e.g., on updated props).
+        this.subscription.unsubscribe();
+      }
+
       // Connect to the provider.
-      this.subscription = provider.connect( typeof query === 'function' ? query( this.props ) : query, {
+      this.subscription = provider.connect( typeof query === 'function' ? query( props ) : query, {
         next: data => {
           if ( process.env.NODE_ENV !== 'production' ) {
             console.log( `[${ Wrapper.displayName }]`, data );
           }
-          
+
           this.setState({
             loaded: true,
             data
@@ -51,11 +73,6 @@ export const withData = ( query ) => WrappedComponent => {
         },
         error: err => console.error( err )   // TODO: Handle error.
       });
-    }
-
-    componentWillUnmount() {
-      // Release provider subscription.
-      this.subscription.unsubscribe();
     }
   }
 
