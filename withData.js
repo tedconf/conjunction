@@ -40,7 +40,8 @@ export const withData = ( query ) => WrappedComponent => {
     }
 
     componentWillReceiveProps( nextProps ) {
-      if ( !equals( this.props, nextProps ) ) {
+      // Test that queries are equivalent, only triggers reconnection when props change queries.
+      if ( !equals( this.prepareQuery( this.props ), this.prepareQuery( nextProps ) ) ) {
         console.log( 'Reconnecting...', this.props, nextProps );
         this.connect( nextProps );
       }
@@ -60,7 +61,7 @@ export const withData = ( query ) => WrappedComponent => {
       }
 
       // Connect to the provider.
-      this.subscription = provider.connect( typeof query === 'function' ? query( props ) : query, {
+      this.subscription = provider.connect( this.prepareQuery( props ), {
         next: data => {
           if ( process.env.NODE_ENV !== 'production' ) {
             console.log( `[${ Wrapper.displayName }]`, data );
@@ -73,6 +74,10 @@ export const withData = ( query ) => WrappedComponent => {
         },
         error: err => console.error( err )   // TODO: Handle error.
       });
+    }
+
+    prepareQuery( props ) {
+      return typeof query === 'function' ? query( props ) : query;
     }
   }
 
