@@ -19,6 +19,8 @@ export const InputObjectType = ({ name, fields }) => {
         .map( key => {
           const { resolve, type } = fieldDefs[key];
 
+          if ( !type || typeof type !== 'object' ) throw new Error( `Invalid type declaration on InputObjectType[${ name }].${ key }` );
+
           return Promise.resolve( resolve ? resolve( input ) : input[key] )
             .then( value => type.resolve ? type.resolve( value ) : value )
             .then( value => ([
