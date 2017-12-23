@@ -7,12 +7,14 @@ export const InputObjectType = ({ name, fields }) => {
 
       console.log( `InputObjectType[${ name }].resolve():`, input, fieldDefs );
 
-      if ( typeof input !== 'object' ) {
-        throw new Error( `Invalid input for ${ name }.resolve(): ${ typeof input }` );
+      // Seems that--especially in the case of inputs--we want to support partial inputs...
+      // ...e.g., what if I just want to patch something: shouldn't I be able to just input the fields I want to change?
+      if ( typeof input === 'undefined' || input === null ) {
+        return Promise.resolve( input );
       }
 
-      if ( input === null ) {
-        return Promise.resolve( input );
+      if ( typeof input !== 'object' ) {
+        throw new Error( `Invalid input for ${ name }.resolve(): ${ typeof input }` );
       }
 
       const resolvers = Object.keys( fieldDefs )
