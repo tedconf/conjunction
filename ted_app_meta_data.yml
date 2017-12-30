@@ -1,0 +1,6 @@
+version: 0.1.0
+vertical: community
+production:
+  endpoint_url:
+staging:
+  endpoint_url:
