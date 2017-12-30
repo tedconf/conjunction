@@ -1,4 +1,4 @@
-import test, { mount } from 'util/tape-setup';
+import test, { mount } from './__tape-setup';
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';

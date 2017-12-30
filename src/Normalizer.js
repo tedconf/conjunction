@@ -4,7 +4,7 @@ import mergeDeepLeft from 'ramda/src/mergeDeepLeft';
 import {
   mapObject,
   reduceObject
-} from 'util/object';
+} from './util/object';
 
 import type {
   RecordKey,
