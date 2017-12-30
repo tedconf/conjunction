@@ -1,0 +1,22 @@
+{
+  "name": "@tedconf/conjunction",
+  "version": "0.1.0",
+  "main": "index.js",
+  "repository": "git@github.com:tedconf/conjunction.git",
+  "author": "Zebulon Young <zebulonj@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "ramda": "^0.25.0",
+    "rxjs": "^5.5.2"
+  },
+  "peerDependencies": {
+    "prop-types": "^15.5.8",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-router-dom": "^4.2.2"
+  },
+  "devDependencies": {
+    "faucet": "https://github.com/zebulonj/faucet/archive/0.0.2.tar.gz",
+    "tape": "^4.8.0"
+  }
+}
