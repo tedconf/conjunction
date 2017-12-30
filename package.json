@@ -16,7 +16,24 @@
     "react-router-dom": "^4.2.2"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.25.0",
+    "babel-eslint": "^7.2.1",
+    "babel-loader": "^7.1.1",
+    "babel-plugin-css-modules-transform": "^1.2.7",
+    "babel-plugin-module-resolver": "^2.7.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "babel-runtime": "6",
     "faucet": "https://github.com/zebulonj/faucet/archive/0.0.2.tar.gz",
     "tape": "^4.8.0"
+  },
+  "scripts": {
+    "clean": "rm -rf build",
+    "build": "babel src --out-dir lib",
+    "test": "tape -r babel-register 'src/**/*.spec.js' | faucet"
   }
 }
