@@ -1,4 +1,39 @@
-# Data Connectors
+# Conjunction
+
+```
+import React from 'react';
+import { DataContainer } from '@tedconf/conjunction';
+
+const sessionQuery = {
+  __fields: {
+    user: {
+      __args: {
+        username: 'zebulonj'
+      },
+      __fields: {
+        id: true,
+        name: true,
+        email: true
+      }
+    }
+  }
+};
+
+export const App = () => (
+  <DataContainer
+    query={ sessionQuery }
+    render={ ({ loaded, user }) => (
+      <div>
+        { !loaded && (
+          <div>{ 'Loading...' }</div>
+        )}
+        { loaded && user && (
+          <div>{ `Hello, ${ user.name }!` }</div>
+        )}
+      </div>
+    )} />
+);
+```
 
 ## Defining Custom Field Resolvers
 
