@@ -1,11 +1,18 @@
 {
   "presets": [
     "flow",
-    "es2015",
-    "stage-1",
-    "react"
+    "react",
+    ["env", {
+      "targets": {
+        "browsers": ["last 2 versions", "safari >= 7"]
+      },
+      "modules": false
+    }],
+    "stage-1"
   ],
-  "plugins": [],
+  "plugins": [
+    "external-helpers"
+  ],
   "ignore": [
     "**/*.spec.js"
   ]

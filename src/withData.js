@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import equals from 'ramda/src/equals';
 
-import { getDisplayName } from 'util/hoc';
+import { getDisplayName } from './util/hoc';
 
 import {
   PROVIDER_KEY,

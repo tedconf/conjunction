@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getDisplayName } from 'util/hoc';
+import { getDisplayName } from './util/hoc';
 
 import {
   PROVIDER_KEY,
