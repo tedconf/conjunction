@@ -11,14 +11,14 @@ export default [
 			'prop-types',
 			'react'
 		],
-		globals: {
-			'react': 'React',
-			'prop-types': 'PropTypes'
-		},
 		output: {
 			name: 'conjunction',
 			file: pkg.browser,
-			format: 'umd'
+			format: 'umd',
+			globals: {
+				'react': 'React',
+				'prop-types': 'PropTypes'
+			}
 		},
 		plugins: [
 			resolve(),

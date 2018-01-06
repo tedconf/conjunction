@@ -42,7 +42,8 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "babel": "babel src --out-dir lib",
-    "test": "tape -r babel-register 'src/**/*.spec.js' | faucet"
+    "test": "tape -r babel-register 'src/**/*.spec.js' | faucet",
+    "prepublishOnly": "rollup -c"
   },
   "files": [
     "README.md",
