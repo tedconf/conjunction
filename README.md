@@ -1,6 +1,6 @@
 # Conjunction
 
-```
+```jsx
 import React from 'react';
 import { DataContainer } from '@tedconf/conjunction';
 
@@ -35,53 +35,34 @@ export const App = () => (
 );
 ```
 
-## Defining Custom Field Resolvers
+```js
+import {
+  Schema,
+  ObjectType,
+  StringType
+} from '@tedconf/conjunction';
 
-By default, fields on custom types (`ObjectType`) will be resolved by matching
-the field name to properties on type source. However, where fields represent
-nested objects (types) or other relational data, it may be necessary to implement
-custom field sources.
+import { request } from 'lib/request';
 
-```
-const Ship = ObjectType({
-  name: 'Ship',
+import { User } from './User';
+
+export const Query = ObjectType({
+  name: 'Query',
   fields: {
-    id: {
-      type: StringType
-    },
-    name: {
-      type: StringType
-    },
-    crew: {
-      type: ArrayType( Person ),
-      source: ( ship ) => fetch( `/ships/${ ship.id }/crew` )
+    user: {
+      type: User,
+      args: {
+        username: StringType
+      },
+      resolve: ( root, args ) => request( `https://api.github.com/users/${ args.username }` )
+        .then( ({ body }) => body )
     }
   }
-})
+});
+
+export const schema = Schema({
+  query: Query
+});
 ```
 
-The source function has the following signature:
-
-```
-function( source, args, context ) : any
-```
-
-## Implementation Plan
-
-1. Minimum Viable Component
-
-    - Translate component queries to actionable API calls.
-    - Execute queries on component mount.
-    - Update data on intersecting actions.
-
-2. Pagination
-
-3. Caching
-
-4. Subscriptions
-
-## Concepts
-
-- Queries
-- Parameters
-- Fragments
+See a full example at: https://github.com/zebulonj/conjunction-example
