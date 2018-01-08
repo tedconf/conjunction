@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/tedconf/conjunction.svg?style=svg)](https://circleci.com/gh/tedconf/conjunction)
+
 # Conjunction
 
 ```jsx
