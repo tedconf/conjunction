@@ -30,7 +30,13 @@
     "babel-preset-stage-1": "^6.24.1",
     "babel-register": "^6.26.0",
     "babel-runtime": "6",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
     "faucet": "https://github.com/zebulonj/faucet/archive/0.0.2.tar.gz",
+    "jsdom": "^11.5.1",
+    "prop-types": "^15.6.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "rollup": "^0.53.3",
     "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-commonjs": "^8.2.6",
@@ -40,10 +46,10 @@
   },
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "babel": "babel src --out-dir lib",
-    "test": "tape -r babel-register 'src/**/*.spec.js' | faucet",
+    "build": "BABEL_ENV=rollup rollup -c",
+    "dev": "BABEL_ENV=rollup rollup -c -w",
+    "babel": "BABEL_ENV=test babel src --out-dir lib",
+    "test": "BABEL_ENV=test tape -r babel-register 'src/**/*.spec.js' | faucet",
     "prepublishOnly": "rollup -c"
   },
   "files": [

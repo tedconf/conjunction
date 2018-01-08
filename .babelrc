@@ -1,19 +1,36 @@
 {
-  "presets": [
-    "flow",
-    "react",
-    ["env", {
-      "targets": {
-        "browsers": ["last 2 versions", "safari >= 7"]
-      },
-      "modules": false
-    }],
-    "stage-1"
-  ],
-  "plugins": [
-    "external-helpers"
-  ],
-  "ignore": [
-    "**/*.spec.js"
-  ]
+  "env": {
+    "rollup": {
+      "presets": [
+        "flow",
+        "react",
+        ["env", {
+          "targets": {
+            "browsers": ["last 2 versions", "safari >= 7"]
+          },
+          "modules": false
+        }],
+        "stage-1"
+      ],
+      "plugins": [
+        "external-helpers"
+      ],
+      "ignore": [
+        "**/*.spec.js"
+      ]
+    },
+    "test": {
+      "presets": [
+        "flow",
+        "react",
+        ["env", {
+          "targets": {
+            "node": true
+          },
+          "modules": "commonjs"
+        }],
+        "stage-1"
+      ]
+    }
+  }
 }
