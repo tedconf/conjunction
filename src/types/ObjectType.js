@@ -23,7 +23,9 @@ export const resolveArgs = ( args = {}, argDefs = {} ) => {
 export function ObjectType({ name, fields = {} } = {}) {
   return {
     resolve( source, query, context = {} ) {
-      console.log( `ObjectType[${ name }].resolve():`, source, query );
+      if ( process.env.NODE_ENV !== 'production' ) {
+        console.log( `ObjectType[${ name }].resolve():`, source, query );
+      }
 
       // A fields thunk, if it exists, has to be resolved after all dependencies are defined... so on nextTick (assuming dependencies are loaded synchronously) or later.
       const _fields = typeof fields === 'function' ? fields() : fields;
@@ -72,7 +74,7 @@ export function ObjectType({ name, fields = {} } = {}) {
 
         // TODO: Validate query arguments: queryParams.args should match fieldDef.args.
 
-        if ( typeof source === 'undefined' ) {
+        if ( typeof source === 'undefined' && process.env.NODE_ENV !== 'production' ) {
           console.warn( `Attempt to resolve field '${ key }' on ${ name } with undefined source.` )
         }
 

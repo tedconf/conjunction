@@ -42,7 +42,10 @@ export const withData = ( query ) => WrappedComponent => {
     componentWillReceiveProps( nextProps ) {
       // Test that queries are equivalent, only triggers reconnection when props change queries.
       if ( !equals( this.prepareQuery( this.props ), this.prepareQuery( nextProps ) ) ) {
-        console.log( 'Reconnecting...', this.props, nextProps );
+        if ( process.env.NODE_ENV !== 'production' ) {
+          console.log( 'Reconnecting...', this.props, nextProps );
+        }
+
         this.connect( nextProps );
       }
     }

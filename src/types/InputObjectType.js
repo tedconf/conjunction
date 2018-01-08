@@ -5,7 +5,9 @@ export const InputObjectType = ({ name, fields }) => {
     resolve: ( input ) => {
       const fieldDefs = typeof fields === 'function' ? fields() : fields;
 
-      console.log( `InputObjectType[${ name }].resolve():`, input, fieldDefs );
+      if ( process.env.NODE_ENV !== 'production' ) {
+        console.log( `InputObjectType[${ name }].resolve():`, input, fieldDefs );
+      }
 
       // Seems that--especially in the case of inputs--we want to support partial inputs...
       // ...e.g., what if I just want to patch something: shouldn't I be able to just input the fields I want to change?

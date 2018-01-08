@@ -63,7 +63,11 @@ export const Store = (): StoreInterface => {
 
   if ( process.env.NODE_ENV !== 'production' ) {
     updates.subscribe({
-      next: () => console.log( '[store]', records )
+      next: () => {
+        if ( process.env.NODE_ENV !== 'production' ) {
+          console.log( '[store]', records );
+        }
+      }
     });
   }
 

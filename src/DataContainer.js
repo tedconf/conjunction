@@ -62,7 +62,10 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
 
     // Test that queries are equivalent, only triggers reconnection when props change queries.
     if ( !equals( prevQuery, query ) ) {
-      console.log( 'Reconnecting...', prevQuery, query );
+      if ( process.env.NODE_ENV !== 'production' ) {
+        console.log( 'Reconnecting...', prevQuery, query );
+      }
+      
       this.connect( query );
     }
   }
