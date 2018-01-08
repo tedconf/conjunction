@@ -18,7 +18,8 @@ type ComponentProps = {
 
 type ComponentState = {
   loaded: bool,
-  data: any
+  data: any,
+  error: any
 };
 
 export class DataContainer extends Component<ComponentProps, ComponentState> {
@@ -31,23 +32,35 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
     [PROVIDER_KEY]: providerShape
   };
 
-  constructor( props: ComponentProps ) {
-    super( props );
+  constructor( props: ComponentProps, context: any ) {
+    super( props, context );
+
+    if ( !context[PROVIDER_KEY] ) {
+      throw new Error( 'DataContainer mounted without a provider.' );
+    }
 
     // TODO: Initialize with data when already available from provider.
     this.state = {
       loaded: false,
-      data: {}
+      data: {},
+      error: null
     };
   }
 
   render() {
-    const { data, loaded } = this.state;
+    const { loaded, data, error } = this.state;
     const { render } = this.props;
+
+    // NOTE: Going to deprecate the 'loaded' property in favor of 'loading',
+    // but for now will pass both. Also, going to pass the query result through
+    // a 'data' object, rather than spreading it..., which will be a BREAKING
+    // change.
 
     return render({
       ...data,
-      loaded
+      error,
+      loaded,
+      loading: !loaded
     });
   }
 
@@ -65,7 +78,7 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
       if ( process.env.NODE_ENV !== 'production' ) {
         console.log( 'Reconnecting...', prevQuery, query );
       }
-      
+
       this.connect( query );
     }
   }
@@ -95,7 +108,16 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
           data
         });
       },
-      error: err => console.error( err )   // TODO: Handle error.
+      // Decided to capture the error in the container state and pass it out via
+      // the render prop, rather than throw it into the React component tree. This
+      // adds flexibility for how errors can be handled. For cases where users want
+      // to handle the error via an error boundary, their render prop can simply
+      // throw the error when it is encountered.
+      error: error => {
+        this.setState({
+          error
+        })
+      }
     });
   }
 }

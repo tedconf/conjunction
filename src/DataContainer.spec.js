@@ -30,7 +30,7 @@ test( "DataContainer...", sub => {
   });
 
   sub.test( "...should receive errors propogated from the query graph.", assert => {
-    assert.plan( 3 );
+    assert.plan( 1 );
 
     const Query = ObjectType({
       name: 'Query',
@@ -56,11 +56,11 @@ test( "DataContainer...", sub => {
       <Provider schema={ schema }>
         <DataContainer
           query={ testQuery }
-          render={ ({ errors }) => {
-            if ( errors ) {
-              assert.ok( Array.isArray( errors ), 'Any error(s) should be passed as an array.' );
-              assert.equal( errors.length, 1, 'The number of errors encountered in the query graph should match the number received in the data container.' );
-              assert.equal( errors[0].message, 'Resolve error at _token_.', 'The error message should match.' );
+          render={ ({ error }) => {
+            if ( error ) {
+              assert.pass( 'The error was received.' );
+              // Punting on the question of how the error is presented, given that multiple errors
+              // could propagate during parrellel execution of a query graph.
             }
 
             return (
