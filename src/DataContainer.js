@@ -42,7 +42,7 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
     // TODO: Initialize with data when already available from provider.
     this.state = {
       loaded: false,
-      data: {},
+      data: undefined,
       error: null
     };
   }
@@ -57,10 +57,10 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
     // change.
 
     return render({
-      ...data,
-      error,
       loaded,
-      loading: !loaded
+      loading: !loaded,
+      data,
+      error,
     });
   }
 
