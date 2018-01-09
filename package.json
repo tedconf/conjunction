@@ -1,6 +1,6 @@
 {
   "name": "@tedconf/conjunction",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "dist/conjunction.cjs.js",
   "module": "dist/conjunction.esm.js",
   "browser": "dist/conjunction.umd.js",
