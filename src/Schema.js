@@ -1,7 +1,8 @@
-export function Schema({ query, mutation }) {
+export function Schema({ query, mutation, catch: errorHandler }) {
   return {
     query( queryDef, context = {} ) {
-      return query.resolve( undefined, queryDef, context );
+      return query.resolve( undefined, queryDef, context )
+        .catch( errorHandler );
     },
 
     mutate( mutationDef, context = {} ) {

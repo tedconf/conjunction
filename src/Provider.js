@@ -93,6 +93,17 @@ export class Provider extends Component<ProviderProps> {
       }))
       .concatMap( ({ __ref }) => store.changes({ key: __ref, fragment: query }) )
       .subscribe( observer );
+
+      // An open question is: what qualifies as an "error" in the Observable sense,
+      // and what happens after one is encountered (does the Observable remain in an
+      // ongoing error state, or does it continue receiving updates)? This certainly
+      // depends, at least in part, on the particulars of the query... at least as
+      // to whether the error is recoverable.
+      //
+      // Leaning heavily toward unrecoverable errors bubbling out into the React
+      // component tree, for handling via an error boundary (or other means).
+      // Recoverable errors would then be "handled" within the schema definition,
+      // and exposed (if at all) to the user by updates to the state graph.
   }
 
   mutate( mutation: any, updater: ( Repository, any ) => Repository ): Promise<*> {

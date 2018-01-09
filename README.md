@@ -1,8 +1,10 @@
 [![CircleCI](https://circleci.com/gh/tedconf/conjunction.svg?style=svg)](https://circleci.com/gh/tedconf/conjunction)
 
+**Caution:** This library is currently in pre-release. The API is in flux and breaking changes may occur in any release on the 0.0.X branch.
+
 # Conjunction
 
-```jsx
+```js
 import React from 'react';
 import { DataContainer } from '@tedconf/conjunction';
 
@@ -24,12 +26,12 @@ const sessionQuery = {
 export const App = () => (
   <DataContainer
     query={ sessionQuery }
-    render={ ({ loaded, user }) => (
+    render={ ({ loading, data: { user } }) => (
       <div>
-        { !loaded && (
+        { loading && (
           <div>{ 'Loading...' }</div>
         )}
-        { loaded && user && (
+        { user && (
           <div>{ `Hello, ${ user.name }!` }</div>
         )}
       </div>
@@ -68,3 +70,31 @@ export const schema = Schema({
 ```
 
 See a full example at: https://github.com/zebulonj/conjunction-example
+
+## Error Handling
+
+Errors occurring anywhere in the graph (whether in association with a query or mutation) should
+propagate up through the graph. Unhandled errors are passed through to the originating data container or
+mutation.
+
+```js
+export const App = () => (
+  <DataContainer
+    query={ sessionQuery }
+    render={ ({ loading, data: { user }, error }) => (
+      <div>
+        { loading && (
+          <div>{ 'Loading...' }</div>
+        )}
+        { loaded && user && (
+          <div>{ `Hello, ${ user.name }!` }</div>
+        )}
+        { error && (
+          <div className="error">
+            { error.message }
+          </div>
+        )}
+      </div>
+    )} />
+);
+```
