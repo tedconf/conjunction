@@ -52,7 +52,7 @@
     "build": "BABEL_ENV=rollup rollup -c",
     "dev": "BABEL_ENV=rollup rollup -c -w",
     "babel": "BABEL_ENV=test babel src --out-dir lib",
-    "test": "NODE_ENV=production BABEL_ENV=test tape -r babel-register 'src/**/*.spec.js' | faucet",
+    "test": "BABEL_ENV=test tape -r babel-register 'src/**/*.spec.js'",
     "prepublishOnly": "npm run build"
   },
   "files": [
