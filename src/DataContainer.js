@@ -35,7 +35,7 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
   constructor( props: ComponentProps, context: any ) {
     super( props, context );
 
-    if ( !context[PROVIDER_KEY] ) {
+    if ( process.env.NODE_ENV !== 'production' && !context[PROVIDER_KEY] ) {
       throw new Error( 'DataContainer mounted without a provider.' );
     }
 
