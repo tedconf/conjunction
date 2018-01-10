@@ -4,7 +4,7 @@ import equals from 'ramda/src/equals';
 
 import {
   PROVIDER_KEY,
-  providerShape
+  PROVIDER_SHAPE
 } from './Provider';
 
 import type { Element } from 'react';
@@ -29,7 +29,7 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
   subscription: any;
 
   static contextTypes = {
-    [PROVIDER_KEY]: providerShape
+    [PROVIDER_KEY]: PROVIDER_SHAPE
   };
 
   constructor( props: ComponentProps, context: any ) {

@@ -9,14 +9,14 @@ import {
 
 import {
   PROVIDER_KEY,
-  providerShape
+  PROVIDER_SHAPE
 } from './Provider';
 
 // TODO: Mocking is a code smell... https://medium.com/javascript-scene/mocking-is-a-code-smell-944a70c90a6a
 
 export class MockProvider extends Component {
   static childContextTypes = {
-    [PROVIDER_KEY]: providerShape
+    [PROVIDER_KEY]: PROVIDER_SHAPE
   };
 
   static propTypes = {

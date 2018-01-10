@@ -3,7 +3,7 @@ import { getDisplayName } from './util/hoc';
 
 import {
   PROVIDER_KEY,
-  providerShape
+  PROVIDER_SHAPE
 } from './Provider';
 
 /**
@@ -21,7 +21,7 @@ import {
 export const withQueries = queries => WrappedComponent => {
   class Wrapper extends Component {
     static contextTypes = {
-      [PROVIDER_KEY]: providerShape
+      [PROVIDER_KEY]: PROVIDER_SHAPE
     };
 
     render() {

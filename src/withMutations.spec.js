@@ -5,7 +5,7 @@ import { withMutations } from './withMutations';
 
 import {
   PROVIDER_KEY,
-  providerShape
+  PROVIDER_SHAPE
 } from './Provider';
 
 test( "connect/withMutations...", sub => {
@@ -20,7 +20,7 @@ test( "connect/withMutations...", sub => {
 
     class MockProvider extends Component {
       static childContextTypes = {
-        [PROVIDER_KEY]: providerShape
+        [PROVIDER_KEY]: PROVIDER_SHAPE
       };
 
       getChildContext() {

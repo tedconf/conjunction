@@ -21,7 +21,7 @@ import {
 // TODO: Select a key less susceptible to collision and allow for override.
 export const PROVIDER_KEY = 'data';
 
-export const providerShape = PropTypes.shape({
+export const PROVIDER_SHAPE = PropTypes.shape({
   connect: PropTypes.func.isRequired,
   mutate: PropTypes.func.isRequired,
   query: PropTypes.func.isRequired
@@ -43,7 +43,7 @@ export class Provider extends Component<ProviderProps> {
   store: StoreInterface;
 
   static childContextTypes = {
-    [PROVIDER_KEY]: providerShape
+    [PROVIDER_KEY]: PROVIDER_SHAPE
   };
 
   constructor( props: ProviderProps ) {
