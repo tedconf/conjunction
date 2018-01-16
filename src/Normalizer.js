@@ -11,8 +11,9 @@ import type {
   Repository
 } from './Store';
 
-type Payload = {
-  id?: RecordKey
+type NodeType = {
+  id?: RecordKey,
+  [propName: string]: any
 };
 
 type RecordReference = {
@@ -36,20 +37,20 @@ type NormalizedResponse = {
 
 export const ROOT_ID = '__root';
 
-export const normalize = ( payload: Payload, selector: { key: RecordKey } = { key: ROOT_ID }): NormalizedResponse => {
-  const key = payload.id || selector.key;
+export const normalize = ( node: NodeType, selector: { key: RecordKey } = { key: ROOT_ID }): NormalizedResponse => {
+  const key = node.id || selector.key;
   const ref = { __ref: key };
 
-  const branches = mapObject( payload, ( fieldNode, fieldName ) => {
-    if ( typeof fieldNode !== 'object' || fieldNode === null ) {
-      // TODO: This would be more precise if type was determined by the schema, rather than inspection of the payload.
+  const branches = mapObject( node, ( nodePropValue, nodePropName ) => {
+    if ( typeof nodePropValue !== 'object' || nodePropValue === null ) {
+      // TODO: This would be more precise if type was determined by the schema, rather than inspection of the node.
       return {
-        ref: fieldNode,
+        ref: nodePropValue,
         records: {}
       };
     }
-    else if ( Array.isArray( fieldNode ) ) {
-      const nodes = fieldNode.map( ( nodeItem, index ) => normalize( nodeItem, { key: `${ key }:${ index }` } ) );
+    else if ( Array.isArray( nodePropValue ) ) {
+      const nodes = nodePropValue.map( ( nodeItem, index ) => normalize( nodeItem, { key: `${ key }:${ nodePropName }:${ index }` } ) );
 
       return {
         ref: nodes.map( ({ ref }) => ref ),
@@ -57,7 +58,7 @@ export const normalize = ( payload: Payload, selector: { key: RecordKey } = { ke
       }
     }
     else {
-      return normalize( fieldNode, { key: `${ key }:${ fieldName }` } );
+      return normalize( nodePropValue, { key: `${ key }:${ nodePropName }` } );
     }
   });
 
