@@ -1,4 +1,11 @@
-export function Schema({ query, mutation, catch: errorHandler }) {
+// @flow
+
+export type SchemaType = {
+  query: ( any, any ) => Promise<*>,
+  mutate: ( any, any ) => Promise<*>
+};
+
+export function Schema({ query, mutation, catch: errorHandler }): SchemaType {
   return {
     query( queryDef, context = {} ) {
       return query.resolve( undefined, queryDef, context )

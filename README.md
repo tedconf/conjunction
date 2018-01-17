@@ -4,6 +4,8 @@
 
 # Conjunction
 
+Mediates interaction with remote and local state (via an API in the case or remote) through a defined schema.
+
 ```js
 import React from 'react';
 import { DataContainer } from '@tedconf/conjunction';

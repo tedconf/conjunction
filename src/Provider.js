@@ -78,13 +78,16 @@ export class Provider extends Component<ProviderProps> {
 
     return Observable
       .fromPromise( schema.query( query ).then( payload => {
-        /**
-         * Making the root key options (defaults to ROOT_ID), to allow introduction
-         * of query-specific roots (to prevent collisions). Assigning a unique root
-         * to each query solves the problem of collisions, while preserving the
-         * core benefits of data consistency, because the unique roots map into
-         * a shared graph based on node ids.
-         */
+        // IDEA: Consider refactoring schema.query to return normalized data. I
+        // don't think that graph data is ever used without passing through normalization
+        // and the store. This could cut down on unnecessary traversal.
+
+        // NOTE: Make the root key optional (defaults to ROOT_ID), to allow introduction
+        // of query-specific roots (to prevent collisions). Assigning a unique root
+        // to each query solves the problem of collisions, while preserving the
+        // core benefits of data consistency, because the unique roots map into
+        // a shared graph based on node ids.
+
         const { records, ref } = normalize( payload, { key: `__query${ counter() }` });
 
         store.put( records );

@@ -114,6 +114,8 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
       // to handle the error via an error boundary, their render prop can simply
       // throw the error when it is encountered.
       error: error => {
+        console.error( error ); // TODO: Including error here for visibility. Identify better method of surfacing errors if not handled (in render-prop) by user.
+
         this.setState({
           error
         })

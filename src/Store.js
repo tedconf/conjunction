@@ -57,17 +57,20 @@ export type StoreInterface = {
   update: ( ( Repository ) => Repository ) => Promise<*>
 };
 
+/**
+ * Store
+ */
 export const Store = (): StoreInterface => {
+  // A map (key:value) of normalized objects representing the visible state graph.
   let records: Repository = {};
+
+  // An Observale emits the entire normalized store on each change. For internal use.
   let updates = new BehaviorSubject({});
 
+  // In development environments, subscribe to changes on the log them to the console.
   if ( process.env.NODE_ENV !== 'production' ) {
     updates.subscribe({
-      next: () => {
-        if ( process.env.NODE_ENV !== 'production' ) {
-          console.log( '[store]', records );
-        }
-      }
+      next: () => console.log( '[Conjunction::Store]', records )
     });
   }
 
@@ -137,6 +140,9 @@ export const Store = (): StoreInterface => {
     };
   }
 
+  /**
+   * Merge updated records into the store.
+   */
   function put( updatedRecords: Repository ): Promise<*> {
     records = mergeDeepRight( records, updatedRecords );
 
@@ -145,6 +151,10 @@ export const Store = (): StoreInterface => {
     return Promise.resolve( null ); // TODO: Handle the case where updates are deferred or batched.
   }
 
+  /**
+   * Traverses the normalized store (`records`) to generate the graph defined
+   * by `selector` (rooted at `selector.key` and scoped by `selector.fragment`).
+   */
   function get( selector: Selector ): Snapshot {
     const { key, fragment } = selector;
 
