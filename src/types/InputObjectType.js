@@ -41,5 +41,3 @@ export const InputObjectType = ({ name, fields }) => {
     }
   };
 }
-
-export default InputObjectType;

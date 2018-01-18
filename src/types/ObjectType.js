@@ -180,5 +180,3 @@ export function ObjectType({ name, fields = {} }: ConstructorParams = {}) {
     }
   };
 }
-
-export default ObjectType;

@@ -29,3 +29,14 @@ export type Snapshot = {
   nodes?: any,
   gaps?: any
 };
+
+export type Observer = {
+  next: ( data: mixed ) => any,
+  error: ( err: any ) => any
+};
+
+export type Subscription = {
+  unsubscribe: ( void ) => void
+};
+
+export type Updater = ( RecordMap, context: any ) => RecordMap;
