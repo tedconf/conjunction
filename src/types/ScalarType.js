@@ -7,5 +7,10 @@
 // in rare cases (which would continue to have their own implementations).
 
 export const ScalarType = {
-  resolve: ( source ) => Promise.resolve( source )
+  resolve: ( source ) => Promise.resolve( source ),
+  
+  normalize: value => ({
+    ref: value,
+    records: {}
+  })
 };

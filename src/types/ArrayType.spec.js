@@ -1,7 +1,7 @@
 import test from 'tape';
 
 import ObjectType from './ObjectType';
-import ArrayType from './array';
+import { ArrayType } from './ArrayType';
 import StringType from './string';
 
 test( "connect/types/array...", sub => {
