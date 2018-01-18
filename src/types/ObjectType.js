@@ -26,7 +26,10 @@ export const resolveArgs = ( args = {}, argDefs = {} ): Promise<*> => {
 
 import type {
   FieldDefinitions,
-  NormalizedResponse
+  NormalizedResponse,
+  Selector,
+  RecordMap,
+  Snapshot
 } from '../__flowtypes';
 
 type ConstructorParams = {
@@ -144,6 +147,35 @@ export function ObjectType({ name, fields = {} }: ConstructorParams = {}) {
       return {
         ref: { __ref: nodeKey },
         records: reduceObject( verticies, ( acc, { records }) => mergeDeepLeft( acc, records ), { [nodeKey]: nodeRecord })
+      };
+    },
+
+    traverse( selector: Selector, records: RecordMap ): Snapshot {
+      const { ref, fragment } = selector;
+      const { __ref: key } = ref;
+
+      const record = records[key];
+
+      // TODO Handle gap (missing record). The idea is that an actual API request can be trimmed to that graph that is not
+      // available in the local store. In the meantime, we throw an error.
+      if ( !record ) throw new Error( `Traversal failed. No record for ${ key }.` );
+
+      const { __fields } = fragment;
+
+      const parts = mapObject( __fields, ( fragmentPart, fragmentKey ) => {
+        const field = fields[fragmentKey];
+        if ( !field ) throw new Error( `Traversal failed. Can't traverse undefined field ${ fragmentKey } on ${ name }.` );
+
+        const { type } = field;
+        if ( typeof type !== 'object' || typeof type.traverse !== 'function' ) throw new Error( `Traversal failed. Invalid type for ${ fragmentKey } on ${ name }.` );
+        // TODO: Type validation can happen at time of definition.
+
+        return type.traverse({ ref: record[fragmentKey], fragment: fragmentPart }, records );
+      });
+
+      return {
+        selector,
+        graph: mapObject( parts, ({ graph }) => graph )
       };
     }
   };

@@ -2,7 +2,10 @@
 import mergeDeepLeft from 'ramda/src/mergeDeepLeft';
 
 import type {
-  NormalizedResponse
+  NormalizedResponse,
+  Selector,
+  RecordMap,
+  Snapshot
 } from '../__flowtypes';
 
 export function ArrayType( Type ) {
@@ -15,7 +18,7 @@ export function ArrayType( Type ) {
     },
 
     normalize( data: any, path: string ): NormalizedResponse {
-      if ( typeof Type !== 'object' || typeof Type.normalize !== 'function' ) throw new Error( `Normalization failed. Invalid array type on ${ name } at ${ path }.` );
+      if ( typeof Type !== 'object' || typeof Type.normalize !== 'function' ) throw new Error( `Normalization failed. Invalid array type at ${ path }.` );
 
       const items = data.map( ( item, index ) => Type.normalize( item, `${ path }:${ index }`) );
 
@@ -23,6 +26,19 @@ export function ArrayType( Type ) {
         ref: items.map( ({ ref }) => ref ),
         records: items.reduce( ( acc, { records }) => mergeDeepLeft( acc, records ), {})
       };
+    },
+
+    traverse( selector: Selector, records: RecordMap ): Snapshot {
+      if ( typeof Type !== 'object' || typeof Type.normalize !== 'function' ) throw new Error( `Traversal failed. Invalid array type.` );
+
+      const { ref: arr, fragment } = selector;
+
+      const items = arr.map( ( ref ) => Type.traverse({ ref, fragment }, records ) );
+
+      return {
+        selector,
+        graph: items.map( ({ graph }) => graph )
+      }
     }
   };
 }

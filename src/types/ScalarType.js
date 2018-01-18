@@ -8,9 +8,13 @@
 
 export const ScalarType = {
   resolve: ( source ) => Promise.resolve( source ),
-  
+
   normalize: value => ({
     ref: value,
     records: {}
+  }),
+
+  traverse: ({ ref }) => ({
+    graph: ref
   })
 };
