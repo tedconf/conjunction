@@ -1,4 +1,7 @@
+import { ScalarType } from './ScalarType';
+
 export const GUIDType = typename => ({
+  ...ScalarType,
   resolve: ( source ) => Promise.resolve( btoa( `${ typename }:${ source }` ) )
 });
 

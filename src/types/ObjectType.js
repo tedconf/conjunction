@@ -1,10 +1,14 @@
+// @flow
+import mergeDeepLeft from 'ramda/src/mergeDeepLeft';
+import { mapObject, reduceObject } from '../util/object';
+
 const defaultFieldResolver = ( parent, fieldName ) => {
   const field = parent[fieldName];
 
   return field && ( typeof field === 'function' ) ? field.call( parent ) : field;
 }
 
-export const resolveArgs = ( args = {}, argDefs = {} ) => {
+export const resolveArgs = ( args = {}, argDefs = {} ): Promise<*> => {
   const resolvers = Object.keys( args ).map( key => {
     return Promise.resolve( argDefs[key].resolve( args[key] ) )
       .then( value => ([
@@ -20,8 +24,27 @@ export const resolveArgs = ( args = {}, argDefs = {} ) => {
     }), {}));
 };
 
-export function ObjectType({ name, fields = {} } = {}) {
+import type {
+  FieldDefinitions,
+  NormalizedResponse,
+  Selector,
+  RecordMap,
+  Snapshot
+} from '../__flowtypes';
+
+type ConstructorParams = {
+  name: string,
+  fields: FieldDefinitions
+};
+
+export function ObjectType({ name, fields = {} }: ConstructorParams = {}) {
   return {
+    /**
+     * Resolves a graph, rooted in the defined object type, corresponding to a
+     * passed query fragment. Uses defined resolvers on each field, falling back
+     * to a default field resolver here (which plucks the value corresponding to
+     * the same-named property on `source`, if available).
+     */
     resolve( source, query, context = {} ) {
       if ( process.env.NODE_ENV !== 'production' ) {
         console.log( `ObjectType[${ name }].resolve():`, source, query );
@@ -92,8 +115,68 @@ export function ObjectType({ name, fields = {} } = {}) {
           ...acc,
           [key]: value
         }), {}) )
+    },
+
+    /**
+     * Accepts a graph payload and returns normalized records representing that graph.
+     *
+     * @param  { any } data The payload to be normalized.
+     * @return { ref, records }
+     */
+    normalize( data: any, path: string = '__root' ): NormalizedResponse {
+      const nodeKey = data.id || path;
+
+      const verticies = mapObject( data, ( value, key ) => {
+        const field = fields[key];
+
+        if ( !field ) throw new Error( `Normalization failed. Field ${ key } is not defined on ${ name } [at ${ path }].` );
+
+        const { type } = field;
+
+        if ( typeof type !== 'object' || typeof type.normalize !== 'function' ) throw new Error( `Normalization failed. Invalid type for field ${ key } on ${ name }.` );
+
+        return type.normalize( value, `${ nodeKey }:${ key }` );
+      });
+
+      const nodeRecord = {
+        __key: nodeKey,
+        __type: name,
+        ...mapObject( verticies, ({ ref }) => ref )
+      };
+
+      return {
+        ref: { __ref: nodeKey },
+        records: reduceObject( verticies, ( acc, { records }) => mergeDeepLeft( acc, records ), { [nodeKey]: nodeRecord })
+      };
+    },
+
+    traverse( selector: Selector, records: RecordMap ): Snapshot {
+      const { ref, fragment } = selector;
+      const { __ref: key } = ref;
+
+      const record = records[key];
+
+      // TODO Handle gap (missing record). The idea is that an actual API request can be trimmed to that graph that is not
+      // available in the local store. In the meantime, we throw an error.
+      if ( !record ) throw new Error( `Traversal failed. No record for ${ key }.` );
+
+      const { __fields } = fragment;
+
+      const parts = mapObject( __fields, ( fragmentPart, fragmentKey ) => {
+        const field = fields[fragmentKey];
+        if ( !field ) throw new Error( `Traversal failed. Can't traverse undefined field ${ fragmentKey } on ${ name }.` );
+
+        const { type } = field;
+        if ( typeof type !== 'object' || typeof type.traverse !== 'function' ) throw new Error( `Traversal failed. Invalid type for ${ fragmentKey } on ${ name }.` );
+        // TODO: Type validation can happen at time of definition.
+
+        return type.traverse({ ref: record[fragmentKey], fragment: fragmentPart }, records );
+      });
+
+      return {
+        selector,
+        graph: mapObject( parts, ({ graph }) => graph )
+      };
     }
   };
 }
-
-export default ObjectType;

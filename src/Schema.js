@@ -5,7 +5,13 @@ export type SchemaType = {
   mutate: ( any, any ) => Promise<*>
 };
 
-export function Schema({ query, mutation, catch: errorHandler }): SchemaType {
+type FactoryProps = {
+  query: any,
+  mutation?: any,
+  catch?: ( any ) => any
+};
+
+export function Schema({ query, mutation, catch: errorHandler }: FactoryProps ): SchemaType {
   return {
     query( queryDef, context = {} ) {
       return query.resolve( undefined, queryDef, context )
@@ -13,8 +19,18 @@ export function Schema({ query, mutation, catch: errorHandler }): SchemaType {
     },
 
     mutate( mutationDef, context = {} ) {
-      return mutation.resolve( undefined, mutationDef, context );
-    }
+      if ( !mutation ) throw new Error( 'No mutation defined.' );
+
+      return mutation.resolve( undefined, mutationDef, context )
+        .then( graph => ({
+          graph,
+          ...mutation.normalize( graph, '__mutation' )
+        }))
+        .catch( errorHandler );
+    },
+
+    normalize: query.normalize,
+    traverse: query.traverse
   };
 }
 

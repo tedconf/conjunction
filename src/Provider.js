@@ -7,16 +7,12 @@ import {
 } from './Rx/Observable';
 
 import { Store } from './Store';
+
 import type {
-  StoreInterface,
   Subscription,
   Observer,
-  Repository
-} from './Store';
-
-import {
-  normalize
-} from './Normalizer';
+  Updater
+} from './__flowtypes';
 
 // TODO: Select a key less susceptible to collision and allow for override.
 export const PROVIDER_KEY = 'data';
@@ -40,7 +36,7 @@ export class Provider extends Component<ProviderProps> {
   mutate: ( any ) => Promise<*>;
   query: ( any ) => Promise<*>;
 
-  store: StoreInterface;
+  store: any;
 
   static childContextTypes = {
     [PROVIDER_KEY]: PROVIDER_SHAPE
@@ -53,7 +49,7 @@ export class Provider extends Component<ProviderProps> {
     this.mutate = this.mutate.bind( this );
     this.query = this.query.bind( this );
 
-    this.store = Store();
+    this.store = Store( props.schema );
   }
 
   getChildContext() {
@@ -72,12 +68,12 @@ export class Provider extends Component<ProviderProps> {
     return children ? React.Children.only( children ) : null;
   }
 
-  connect( query: any, observer: Observer ): Subscription {
+  connect( fragment: any, observer: Observer ): Subscription {
     const { schema } = this.props;
     const store = this.store;
 
     return Observable
-      .fromPromise( schema.query( query ).then( payload => {
+      .fromPromise( schema.query( fragment ).then( graph => {
         // IDEA: Consider refactoring schema.query to return normalized data. I
         // don't think that graph data is ever used without passing through normalization
         // and the store. This could cut down on unnecessary traversal.
@@ -88,13 +84,17 @@ export class Provider extends Component<ProviderProps> {
         // core benefits of data consistency, because the unique roots map into
         // a shared graph based on node ids.
 
-        const { records, ref } = normalize( payload, { key: `__query${ counter() }` });
+        const { ref, records } = schema.normalize( graph, `__query${ counter() }` );
 
-        store.put( records );
+        store.update( () => records );
 
-        return ref;
+        return {
+          ref,
+          fragment
+        };
       }))
-      .concatMap( ({ __ref }) => store.changes({ key: __ref, fragment: query }) )
+      .concatMap( ( selector ) => store.changes( selector ) )
+      .map( ({ graph }) => graph )
       .subscribe( observer );
 
       // An open question is: what qualifies as an "error" in the Observable sense,
@@ -109,28 +109,18 @@ export class Provider extends Component<ProviderProps> {
       // and exposed (if at all) to the user by updates to the state graph.
   }
 
-  mutate( mutation: any, updater: ( Repository, any ) => Repository ): Promise<*> {
+  mutate( mutation: any, updater: Updater ): Promise<*> {
     const { schema } = this.props;
     const store = this.store;
 
     // TODO: Need to include the "fat" query on mutation definitions, so that fields don't have to be manually queried to ensure updates.
 
-    return schema.mutate( mutation )
-      .then( payload => {
-        const { records } = normalize( payload, { key: '__query' });
+    return schema.mutate( mutation ).then( ({ graph, records }) => {
+      store.update( () => records );
+      updater && store.update( records => updater( records, graph ) );
 
-        // Filter out the mutation root node(s).
-        const update = Object.keys( records )
-          .filter( key => !key.match( /^__query/ ) )
-          .reduce( ( acc, key ) => ({
-            ...acc,
-            [key]: records[key]
-          }), {});
-
-        return store.put( update )
-          .then( () => updater && store.update( records => updater( records, payload ) ) )
-          .then( () => payload );
-      });
+      return graph;
+    });
   }
 
   query( query: any ) {

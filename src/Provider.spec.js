@@ -11,7 +11,7 @@ import {
   Provider
 } from './Provider'
 
-test( "connect/Provider...", sub => {
+test( "Provider...", sub => {
   sub.test( "....connect().", assert => {
     const Query = ObjectType({
       name: 'Query',

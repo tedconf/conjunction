@@ -1,9 +1,11 @@
 import test from 'tape';
 
-import ObjectType from './ObjectType';
-import InputObjectType from './InputObjectType';
-import StringType from './string';
-import IntType from './int';
+import { ObjectType } from './ObjectType';
+import { InputObjectType } from './InputObjectType';
+import {
+  StringType,
+  IntType
+} from './ScalarType';
 
 test( "connect/types/ObjectType...", sub => {
   sub.test( "...should expose a .resolve() method.", assert => {

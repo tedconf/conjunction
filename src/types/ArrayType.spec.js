@@ -1,8 +1,8 @@
 import test from 'tape';
 
-import ObjectType from './ObjectType';
-import ArrayType from './array';
-import StringType from './string';
+import { ObjectType } from './ObjectType';
+import { ArrayType } from './ArrayType';
+import { StringType } from './ScalarType';
 
 test( "connect/types/array...", sub => {
   sub.test( "...should map source items to the wrapped type's resolve method.", assert => {

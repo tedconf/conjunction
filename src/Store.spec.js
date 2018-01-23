@@ -2,11 +2,16 @@
 import test from 'tape';
 
 import { Store } from './Store';
+import { Schema } from './Schema';
+import {
+  ObjectType,
+  ArrayType,
+  ScalarType
+} from './types';
 
 import type {
-  Repository,
-  Fragment
-} from './Store';
+  RecordMap
+} from './__flowtypes';
 
 test( "connect/store/Store...", sub => {
   sub.test( "...Store()", assert => {
@@ -18,252 +23,181 @@ test( "connect/store/Store...", sub => {
     assert.end();
   });
 
-  sub.test( "...Store#put()", assert => {
+  sub.test( "...Store#update()", assert => {
     const store = Store();
-    assert.equal( typeof store.put, 'function', '...should be defined.' );
+    assert.equal( typeof store.update, 'function', '...should be defined.' );
 
     assert.end();
   });
 
-  sub.test( "...Store#put() should merge updated records.", assert => {
-    const records: Repository = {
-      'R3JvdXA6MDAwMDE=': {
-        __key: 'R3JvdXA6MDAwMDE=',
-        __typename: 'Group',
-        id: 'R3JvdXA6MDAwMDE=',
-        name: 'TEDxSebastopol',
-        venues: [
-          { __ref: 'VmVudWU6MDAwMDI=' },
-          { __ref: 'VmVudWU6MDAwMDM=' }
-        ]
-      },
-      'VmVudWU6MDAwMDI=': {
-        __key: 'VmVudWU6MDAwMDI=',
-        __typename: 'Venue',
-        name: 'Ragle Ranch Park'
-      },
-      'VmVudWU6MDAwMDM=': {
-        __key: 'VmVudWU6MDAwMDM=',
-        __typename: 'Venue',
-        name: 'Ives Park'
-      }
-    };
-
-    const fragment: Fragment = {
-      __on: 'Group',
-      __fields: {
-        name: true,
-        venues: {
-          __fields: {
-            name: true
-          }
+  sub.test( "...Store#update() should merge updated records.", assert => {
+    const Person = ObjectType({
+      name: 'Person',
+      fields: {
+        id: {
+          type: ScalarType
+        },
+        name: {
+          type: ScalarType
         }
-      }
-    };
-
-    const expected = {
-      selector: { fragment, key: 'R3JvdXA6MDAwMDE=' },
-      data: {
-        name: 'TEDxSebastopol',
-        venues: [
-          {
-            name: 'Ragle Ranch Park'
-          },
-          {
-            name: 'Libby Park'
-          }
-        ]
-      },
-      nodes: [
-        'R3JvdXA6MDAwMDE=',
-        'VmVudWU6MDAwMDI=',
-        'VmVudWU6MDAwMDM='
-      ].sort()
-    };
-
-    const store = Store();
-    store.put( records );
-    store.put({
-      'VmVudWU6MDAwMDM=': {
-        __key: 'VmVudWU6MDAwMDM=',
-        __typename: 'Venue',
-        name: 'Libby Park'
       }
     });
 
-    const snapshot = store.get({ fragment, key: 'R3JvdXA6MDAwMDE=' });
+    const Cargo = ObjectType({
+      name: 'Cargo',
+      fields: {
+        item: {
+          type: ScalarType
+        },
+        weight: {
+          type: ScalarType
+        }
+      }
+    });
 
-    assert.deepEqual( snapshot, expected, 'The selector should be correctly resolved.' );
-    assert.end();
-  });
+    const Ship = ObjectType({
+      name: 'Ship',
+      fields: {
+        id: {
+          type: ScalarType
+        },
+        name: {
+          type: ScalarType
+        },
+        crew: {
+          type: ArrayType( Person )
+        },
+        manifest: {
+          type: ArrayType( Cargo )
+        }
+      }
+    });
 
-  sub.test( "...Store#get() should be defined.", assert => {
-    const store = Store();
-    assert.equal( typeof store.get, 'function', '...should be defined.' );
+    const Query = ObjectType({
+      name: 'Query',
+      fields: {
+        ship: {
+          type: Ship
+        }
+      }
+    });
 
-    assert.end();
-  });
+    const schema = Schema({
+      query: Query
+    })
 
-  sub.test( "...Store#get() should return the expected snapshot.", assert => {
-    const records: Repository = {
-      'R3JvdXA6MDAwMDE=': {
-        __key: 'R3JvdXA6MDAwMDE=',
-        __typename: 'Group',
-        id: 'R3JvdXA6MDAwMDE=',
-        name: 'TEDxSebastopol',
-        venues: [
-          { __ref: 'VmVudWU6MDAwMDI=' },
-          { __ref: 'VmVudWU6MDAwMDM=' }
+    const records: RecordMap = {
+      '__root': {
+        __key: '__root',
+        __typename: 'Query',
+        ship: { __ref: '0000C' }
+      },
+      '0000C': {
+        __key: '0000C',
+        __typename: 'Ship',
+        id: '0000C',
+        name: 'Millennium Falcon',
+        crew: [
+          { __ref: 'crew_00A' },
+          { __ref: 'crew_00B' }
+        ],
+        manifest: [
+          { __ref: '0000C:manifest:0' },
+          { __ref: '0000C:manifest:1' }
         ]
       },
-      'VmVudWU6MDAwMDI=': {
-        __key: 'VmVudWU6MDAwMDI=',
-        __typename: 'Venue',
-        name: 'Ragle Ranch Park'
+      'crew_00A': {
+        __key: 'crew_00A',
+        __typename: 'Person',
+        id: 'crew_00A',
+        name: 'Hans Solo'
       },
-      'VmVudWU6MDAwMDM=': {
-        __key: 'VmVudWU6MDAwMDM=',
-        __typename: 'Venue',
-        name: 'Ives Park'
+      'crew_00B': {
+        __key: 'crew_00B',
+        __typename: 'Person',
+        id: 'crew_00B',
+        name: 'Chewbacca'
+      },
+      '0000C:manifest:0': {
+        __key: '0000C:manifest:0',
+        __typename: 'Cargo',
+        item: 'Bantha Fodder',
+        weight: 100.1
+      },
+      '0000C:manifest:1': {
+        __key: '0000C:manifest:1',
+        __typename: 'Cargo',
+        item: 'Kyber Crystals',
+        weight: 24.6
       }
     };
 
-    const fragment: Fragment = {
-      __on: 'Group',
+    const fragment = {
       __fields: {
-        name: true,
-        venues: {
+        ship: {
           __fields: {
-            name: true
+            manifest: {
+              __fields: {
+                item: true,
+                weight: true
+              }
+            }
           }
         }
       }
     };
 
-    const expected = {
-      selector: { fragment, key: 'R3JvdXA6MDAwMDE=' },
-      data: {
-        name: 'TEDxSebastopol',
-        venues: [
-          {
-            name: 'Ragle Ranch Park'
-          },
-          {
-            name: 'Ives Park'
-          }
-        ]
-      },
-      nodes: [
-        'R3JvdXA6MDAwMDE=',
-        'VmVudWU6MDAwMDI=',
-        'VmVudWU6MDAwMDM='
-      ].sort()
-    };
-
-    const store = Store();
-    store.put( records );
-
-    const snapshot = store.get({ fragment, key: 'R3JvdXA6MDAwMDE=' });
-
-    assert.deepEqual( snapshot, expected, 'The selector should be correctly resolved.' );
-
-    assert.end();
-  });
-
-  sub.test( "...Store#changes()", assert => {
-    const records: Repository = {
-      'R3JvdXA6MDAwMDE=': {
-        __key: 'R3JvdXA6MDAwMDE=',
-        __typename: 'Group',
-        id: 'R3JvdXA6MDAwMDE=',
-        name: 'TEDxSebastopol',
-        venues: [
-          { __ref: 'VmVudWU6MDAwMDI=' },
-          { __ref: 'VmVudWU6MDAwMDM=' }
-        ]
-      },
-      'VmVudWU6MDAwMDI=': {
-        __key: 'VmVudWU6MDAwMDI=',
-        __typename: 'Venue',
-        name: 'Ragle Ranch Park'
-      },
-      'VmVudWU6MDAwMDM=': {
-        __key: 'VmVudWU6MDAwMDM=',
-        __typename: 'Venue',
-        name: 'Ives Park'
-      }
-    };
-
-    const fragment: Fragment = {
-      __on: 'Group',
-      __fields: {
-        name: true,
-        venues: {
-          __fields: {
-            name: true
-          }
-        }
-      }
-    };
-
-    const store = Store();
-    store.put( records );
-
-    assert.equal( typeof store.changes, 'function', 'The .subscribe() method should be defined.' );
+    const store = Store( schema );
+    store.update( () => records );
 
     const events = [];
-    const subscription = store.changes({ fragment, key: 'R3JvdXA6MDAwMDE=' }).subscribe({
-      next: data => events.push( data ),
-      error: err => assert.end( err )
-    });
 
-    assert.equal( typeof subscription.unsubscribe, 'function', 'Should return a disposable.' );
-
-    // TODO: Be sure to test a partial put.
-    const update = store.put({
-      ...records,
-      'R3JvdXA6MDAwMDE=': {
-        __key: 'R3JvdXA6MDAwMDE=',
-        __typename: 'Group',
-        id: 'R3JvdXA6MDAwMDE=',
-        name: 'TEDxGraton',
-        venues: [
-          { __ref: 'VmVudWU6MDAwMDI=' },
-          { __ref: 'VmVudWU6MDAwMDM=' }
-        ]
-      }
-    });
-
-    const expectedEvents = [{
-      name: 'TEDxSebastopol',
-      venues: [
-        {
-          name: 'Ragle Ranch Park'
-        },
-        {
-          name: 'Ives Park'
+    const expectedEvents = [
+      {
+        ship: {
+          manifest: [
+            {
+              item: 'Bantha Fodder',
+              weight: 100.1
+            },
+            {
+              item: 'Kyber Crystals',
+              weight: 24.6
+            }
+          ]
         }
-      ]
-    }, {
-      name: 'TEDxGraton',
-      venues: [
-        {
-          name: 'Ragle Ranch Park'
-        },
-        {
-          name: 'Ives Park'
-        }
-      ]
-    }];
-
-    update.then(
-      () => {
-        assert.deepEqual( events, expectedEvents, 'The subscription should yield the expected updates.' );
-
-        subscription.unsubscribe();
-        assert.end();
       },
-      err => assert.end( err )
-    );
+      {
+        ship: {
+          manifest: [
+            {
+              item: 'Bantha Fodder',
+              weight: 150.5
+            },
+            {
+              item: 'Kyber Crystals',
+              weight: 24.6
+            }
+          ]
+        }
+      }
+    ];
+
+    store.changes({ ref: { __ref: '__root' }, fragment })
+      .subscribe({
+        next: ({ graph }) => events.push( graph ),
+        error: err => assert.error( err )
+      });
+
+    store.update( () => ({
+      '0000C:manifest:0': {
+        __key: '0000C:manifest:0',
+        __typename: 'Cargo',
+        weight: 150.5
+      }
+    }));
+
+    assert.deepEqual( events, expectedEvents, 'The expected graphs should be emitted on update.' );
+    assert.end();
   });
 });
