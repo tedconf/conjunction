@@ -124,6 +124,13 @@ export function ObjectType({ name, fields = {} }: ConstructorParams = {}) {
      * @return { ref, records }
      */
     normalize( data: any, path: string = '__root' ): NormalizedResponse {
+      if ( data === null ) {
+        return {
+          ref: data,
+          records: {}
+        };
+      }
+
       const nodeKey = data.id || path;
 
       const verticies = mapObject( data, ( value, key ) => {
@@ -152,6 +159,14 @@ export function ObjectType({ name, fields = {} }: ConstructorParams = {}) {
 
     traverse( selector: Selector, records: RecordMap ): Snapshot {
       const { ref, fragment } = selector;
+
+      if ( ref === null ) {
+        return {
+          selector,
+          graph: ref
+        };
+      }
+
       const { __ref: key } = ref;
 
       const record = records[key];
