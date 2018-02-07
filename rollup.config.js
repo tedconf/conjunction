@@ -1,7 +1,6 @@
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import babel from 'rollup-plugin-babel';
-import uglify from 'rollup-plugin-uglify';
 
 import pkg from './package.json';
 
@@ -23,7 +22,9 @@ export default [
 		},
 		plugins: [
 			resolve(),
-			babel(),
+			babel({
+				exclude: ['node_modules/**']
+			}),
 			commonjs()
 		]
 	},
@@ -41,26 +42,10 @@ export default [
 		],
 		plugins: [
 			resolve(),
-			babel(),
+			babel({
+				exclude: ['node_modules/**']
+			}),
 			commonjs()
-		]
-	},
-	{
-		input: 'src/index.js',
-		external: [
-			'prop-types',
-			'ramda',
-			'rxjs',
-			'react'
-		],
-		output: [
-			{ file: 'dist/conjunction.cjs.min.js', format: 'cjs', name: 'conjunction' }
-		],
-		plugins: [
-			resolve(),
-			babel(),
-			commonjs(),
-			uglify()
 		]
 	}
 ];

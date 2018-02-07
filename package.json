@@ -1,6 +1,6 @@
 {
   "name": "@tedconf/conjunction",
-  "version": "0.0.9-pre0",
+  "version": "0.0.9-pre1",
   "main": "dist/conjunction.cjs.js",
   "module": "dist/conjunction.esm.js",
   "browser": "dist/conjunction.umd.js",
@@ -49,7 +49,6 @@
     "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-uglify": "^2.0.1",
     "tape": "^4.8.0"
   },
   "scripts": {
