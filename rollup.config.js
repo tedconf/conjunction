@@ -23,9 +23,7 @@ export default [
 		},
 		plugins: [
 			resolve(),
-			babel({
-				exclude: ['node_modules/**']
-			}),
+			babel(),
 			commonjs()
 		]
 	},
@@ -43,9 +41,7 @@ export default [
 		],
 		plugins: [
 			resolve(),
-			babel({
-				exclude: ['node_modules/**']
-			}),
+			babel(),
 			commonjs()
 		]
 	},
@@ -58,13 +54,11 @@ export default [
 			'react'
 		],
 		output: [
-			{ file: 'dist/conjunction.cjs.min.js', format: 'cjs' }
+			{ file: 'dist/conjunction.cjs.min.js', format: 'cjs', name: 'conjunction' }
 		],
 		plugins: [
 			resolve(),
-			babel({
-				exclude: ['node_modules/**']
-			}),
+			babel(),
 			commonjs(),
 			uglify()
 		]

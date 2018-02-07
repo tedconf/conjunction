@@ -26,7 +26,7 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
   props: ComponentProps;
   state: ComponentState;
 
-  subscription: any;
+  dispose: any;
 
   static contextTypes = {
     [PROVIDER_KEY]: PROVIDER_SHAPE
@@ -85,19 +85,19 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
 
   componentWillUnmount() {
     // Release provider subscription.
-    this.subscription.unsubscribe();
+    this.dispose();
   }
 
   connect( query: any ) {
     const provider = this.context[PROVIDER_KEY];
 
-    if ( this.subscription ) {
+    if ( this.dispose ) {
       // Dispose of prior subscriptions (e.g., on updated props).
-      this.subscription.unsubscribe();
+      this.dispose();
     }
 
     // Connect to the provider.
-    this.subscription = provider.connect( query, {
+    this.dispose = provider.connect( query, {
       next: data => {
         if ( process.env.NODE_ENV !== 'production' ) {
           console.log( `[DataContainer]`, data );

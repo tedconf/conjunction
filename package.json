@@ -1,6 +1,6 @@
 {
   "name": "@tedconf/conjunction",
-  "version": "0.0.7",
+  "version": "0.0.9-pre0",
   "main": "dist/conjunction.cjs.js",
   "module": "dist/conjunction.esm.js",
   "browser": "dist/conjunction.umd.js",
@@ -10,8 +10,13 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "ramda": "^0.25.0",
-    "rxjs": "^5.5.2"
+    "callbag-behavior-subject": "^1.0.1",
+    "callbag-flatten": "^1.0.0",
+    "callbag-from-promise": "^1.0.0",
+    "callbag-map": "^1.0.0",
+    "callbag-pipe": "^1.1.0",
+    "callbag-subscribe": "^1.1.0",
+    "ramda": "^0.25.0"
   },
   "peerDependencies": {
     "prop-types": "^15.5.8",

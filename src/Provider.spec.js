@@ -11,6 +11,35 @@ import {
   Provider
 } from './Provider'
 
+import pipe from 'callbag-pipe';
+import makeBehaviorSubject from 'callbag-behavior-subject';
+import subscribe from 'callbag-subscribe';
+
+test( "Callbag sanity check.", assert => {
+  const subject = makeBehaviorSubject( '0' );
+  const events = [];
+
+  const dispose = pipe(
+    subject,
+    subscribe({
+      next: val => events.push( val ),
+      error: err => events.push({ err })
+    })
+  );
+
+  assert.equal( typeof dispose, 'function', 'The subscribe() method should return a function.' );
+
+  subject( 1, 'A' );
+  subject( 1, 'B' );
+
+  dispose();
+
+  subject( 2, 'Yikes!' )
+
+  assert.deepEqual( events, ['0', 'A', 'B'], 'All events should be received.' );
+  assert.end();
+});
+
 test( "Provider...", sub => {
   sub.test( "....connect().", assert => {
     const Query = ObjectType({
@@ -39,14 +68,14 @@ test( "Provider...", sub => {
 
     const wrapper = mount( <Provider schema={ schema } /> );
 
-    const connection = wrapper.instance().connect( fragment, {
+    const unsubscribe = wrapper.instance().connect( fragment, {
       next: data => {
         assert.deepEqual( data, expectedData, 'The expected data should be loaded.' );
         assert.end();
       }
     });
 
-    assert.equals( typeof connection.unsubscribe, 'function', 'The .connect() method should return a subscription.' );
+    assert.equals( typeof unsubscribe, 'function', 'The .connect() method should return a disposal function.' );
   });
 
   sub.test( "...mutate().", assert => {

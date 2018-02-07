@@ -1,23 +1,21 @@
 // @flow
 import mergeDeepRight from 'ramda/src/mergeDeepRight';
 
-import {
-  Observable
-} from './Rx/Observable';
-
-import {
-  BehaviorSubject
-} from './Rx/Subject';
+import pipe from 'callbag-pipe';
+import map from 'callbag-map';
+import makeSubject from 'callbag-behavior-subject';
+import subscribe from 'callbag-subscribe';
 
 import type {
   Selector,
   RecordMap,
-  Updater,
-  Snapshot
+  Updater
 } from './__flowtypes';
 
+type CallbagSource = ( type: 0 | 1 | 2, data: any ) => void;
+
 type StoreInterface = {
-  changes: ( Selector ) => Observable<RecordMap>,
+  changes: ( Selector ) => CallbagSource,
   update: ( ( RecordMap ) => RecordMap ) => void
 };
 
@@ -29,13 +27,17 @@ export const Store = ( schema: any ): StoreInterface => {
   let records: RecordMap = {};
 
   // An Observale emits the entire normalized store on each change. For internal use.
-  let updates = new BehaviorSubject({});
+  let updates = makeSubject({});
 
   // In development environments, subscribe to changes on the log them to the console.
   if ( process.env.NODE_ENV !== 'production' ) {
-    updates.subscribe({
-      next: () => console.log( '[Conjunction::Store]', records )
-    });
+    pipe(
+      updates,
+      subscribe({
+        next: state => console.log( '[Conjunction::Store]', state ),
+        error: err => console.error( err )
+      })
+    );
   }
 
   return {
@@ -45,13 +47,15 @@ export const Store = ( schema: any ): StoreInterface => {
     update( updater: Updater ): void {
       records = mergeDeepRight( records, updater( records ) );
 
-      updates.next( records );
+      updates( 1, records );
     },
 
-    changes( selector: Selector ): Observable<Snapshot> {
+    changes( selector: Selector ): CallbagSource {
       // TODO: Filter updates based on required nodes (selector).
-      return updates
-        .map( records => schema.traverse( selector, records ));
+      return pipe(
+        updates,
+        map( records => schema.traverse( selector, records ) )
+      );
     }
   };
 };

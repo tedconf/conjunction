@@ -1,10 +1,11 @@
-// @flow
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import {
-  Observable
-} from './Rx/Observable';
+import pipe from 'callbag-pipe';
+import map from 'callbag-map';
+import flatten from 'callbag-flatten';
+import fromPromise from 'callbag-from-promise';
+import subscribe from 'callbag-subscribe';
 
 import { Store } from './Store';
 
@@ -72,8 +73,8 @@ export class Provider extends Component<ProviderProps> {
     const { schema } = this.props;
     const store = this.store;
 
-    return Observable
-      .fromPromise( schema.query( fragment ).then( graph => {
+    return pipe(
+      fromPromise( schema.query( fragment ).then( graph => {
         // IDEA: Consider refactoring schema.query to return normalized data. I
         // don't think that graph data is ever used without passing through normalization
         // and the store. This could cut down on unnecessary traversal.
@@ -92,21 +93,23 @@ export class Provider extends Component<ProviderProps> {
           ref,
           fragment
         };
-      }))
-      .concatMap( ( selector ) => store.changes( selector ) )
-      .map( ({ graph }) => graph )
-      .subscribe( observer );
+      })),
+      map( selector => store.changes( selector ) ),
+      flatten,
+      map( ({ graph }) => graph ),
+      subscribe( observer )
+    );
 
-      // An open question is: what qualifies as an "error" in the Observable sense,
-      // and what happens after one is encountered (does the Observable remain in an
-      // ongoing error state, or does it continue receiving updates)? This certainly
-      // depends, at least in part, on the particulars of the query... at least as
-      // to whether the error is recoverable.
-      //
-      // Leaning heavily toward unrecoverable errors bubbling out into the React
-      // component tree, for handling via an error boundary (or other means).
-      // Recoverable errors would then be "handled" within the schema definition,
-      // and exposed (if at all) to the user by updates to the state graph.
+    // An open question is: what qualifies as an "error" in the Observable sense,
+    // and what happens after one is encountered (does the Observable remain in an
+    // ongoing error state, or does it continue receiving updates)? This certainly
+    // depends, at least in part, on the particulars of the query... at least as
+    // to whether the error is recoverable.
+    //
+    // Leaning heavily toward unrecoverable errors bubbling out into the React
+    // component tree, for handling via an error boundary (or other means).
+    // Recoverable errors would then be "handled" within the schema definition,
+    // and exposed (if at all) to the user by updates to the state graph.
   }
 
   mutate( mutation: any, updater: Updater ): Promise<*> {

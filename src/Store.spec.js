@@ -1,6 +1,9 @@
 // @flow
 import test from 'tape';
 
+import pipe from 'callbag-pipe';
+import subscribe from 'callbag-subscribe';
+
 import { Store } from './Store';
 import { Schema } from './Schema';
 import {
@@ -183,11 +186,13 @@ test( "connect/store/Store...", sub => {
       }
     ];
 
-    store.changes({ ref: { __ref: '__root' }, fragment })
-      .subscribe({
+    pipe(
+      store.changes({ ref: { __ref: '__root' }, fragment }),
+      subscribe({
         next: ({ graph }) => events.push( graph ),
         error: err => assert.error( err )
-      });
+      })
+    );
 
     store.update( () => ({
       '0000C:manifest:0': {
