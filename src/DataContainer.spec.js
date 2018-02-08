@@ -135,4 +135,70 @@ test( "DataContainer...", sub => {
       </Provider>
     );
   });
+
+  sub.test( "...should support both props.render and props.children.", assert => {
+    assert.plan( 4 );
+
+    const eventsOnRender = [
+      undefined,
+      {
+        token: '00000XX'
+      }
+    ];
+
+    const eventsOnChildren = [
+      undefined,
+      {
+        token: '00000XX'
+      }
+    ];
+
+    const Query = ObjectType({
+      name: 'Query',
+      fields: {
+        token: {
+          type: StringType,
+          resolve: () => Promise.resolve( '00000XX' )
+        }
+      }
+    });
+
+    const schema = Schema({
+      query: Query
+    });
+
+    const testQuery = {
+      __fields: {
+        token: true
+      }
+    };
+
+    mount(
+      <Provider schema={ schema }>
+        <DataContainer
+          query={ testQuery }
+          render={ ({ data }) => {
+            assert.deepEquals( data, eventsOnRender.shift(), `Render should reflect the correct data.` );
+
+            return (
+              <div></div>
+            );
+          }} />
+      </Provider>
+    );
+
+    mount(
+      <Provider schema={ schema }>
+        <DataContainer query={ testQuery }>
+          { ({ data }) => {
+            assert.deepEquals( data, eventsOnChildren.shift(), `Render should reflect the correct data.` );
+
+            return (
+              <div></div>
+            );
+          }}
+        </DataContainer>
+      </Provider>
+    );
+  });
 });

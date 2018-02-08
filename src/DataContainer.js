@@ -12,7 +12,8 @@ import type { Element } from 'react';
 type RenderProps = {};
 
 type ComponentProps = {
-  render: ( RenderProps ) => Element<*>,
+  render?: ( RenderProps ) => Element<*>,
+  children?: ( RenderProps ) => Element<*>,
   query: any
 };
 
@@ -49,14 +50,28 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
 
   render() {
     const { loaded, data, error } = this.state;
-    const { render } = this.props;
+    const { render, children } = this.props;
 
     // NOTE: Going to deprecate the 'loaded' property in favor of 'loading',
     // but for now will pass both. Also, going to pass the query result through
     // a 'data' object, rather than spreading it..., which will be a BREAKING
     // change.
 
-    return render({
+    // NOTE: Migrating from props.render to props.children for the render property.
+    // Will support both initially, and warn on use of props.render.
+    // TODO: Remove support for support for props.render before first stable release.
+
+    if ( render ) {
+      console.warn( '[Conjunction] Deprecation warning: props.render has been deprecated in favor of props.children as a render property.' );
+    }
+
+    if ( children && typeof children !== 'function' ) throw new Error( 'Invalid render property (props.children) on DataContainer.' );
+
+    const r = children || render;
+
+    if ( typeof r !== 'function' ) throw new Error( 'DataContainer requires a render property.' );
+
+    return r({
       loaded,
       loading: !loaded,
       data,
