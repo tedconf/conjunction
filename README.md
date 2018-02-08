@@ -26,9 +26,8 @@ const sessionQuery = {
 };
 
 export const App = () => (
-  <DataContainer
-    query={ sessionQuery }
-    render={ ({ loading, data: { user } }) => (
+  <DataContainer query={ sessionQuery }>
+    { ({ loading, data: { user } }) => (
       <div>
         { loading && (
           <div>{ 'Loading...' }</div>
@@ -37,7 +36,8 @@ export const App = () => (
           <div>{ `Hello, ${ user.name }!` }</div>
         )}
       </div>
-    )} />
+    )}
+  </DataContainer>
 );
 ```
 
@@ -81,9 +81,8 @@ mutation.
 
 ```js
 export const App = () => (
-  <DataContainer
-    query={ sessionQuery }
-    render={ ({ loading, data: { user }, error }) => (
+  <DataContainer query={ sessionQuery }>
+    { ({ loading, data: { user }, error }) => (
       <div>
         { loading && (
           <div>{ 'Loading...' }</div>
@@ -97,6 +96,7 @@ export const App = () => (
           </div>
         )}
       </div>
-    )} />
+    )}
+  </DataContainer>
 );
 ```
