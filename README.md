@@ -1,4 +1,6 @@
-[![CircleCI](https://circleci.com/gh/tedconf/conjunction.svg?style=svg)](https://circleci.com/gh/tedconf/conjunction)
+# conjunction
+
+[![CircleCI](https://img.shields.io/circleci/project/tedconf/conjunction.svg)]() [![npm](https://img.shields.io/npm/v/@tedconf/conjunction.svg)]() [![npm](https://img.shields.io/npm/dt/@tedconf/conjunction.svg)]()
 
 **Caution:** This library is currently in pre-release. The API is in flux and breaking changes may occur in any release on the 0.0.X branch.
 

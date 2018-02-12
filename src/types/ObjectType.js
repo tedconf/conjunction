@@ -131,10 +131,13 @@ export function ObjectType({ name, fields = {} }: ConstructorParams = {}) {
         };
       }
 
+      // Resolve fields thunk.
+      const $fields = typeof fields === 'function' ? fields() : fields;
+
       const nodeKey = data.id || path;
 
       const verticies = mapObject( data, ( value, key ) => {
-        const field = fields[key];
+        const field = $fields[key];
 
         if ( !field ) throw new Error( `Normalization failed. Field ${ key } is not defined on ${ name } [at ${ path }].` );
 
@@ -175,10 +178,13 @@ export function ObjectType({ name, fields = {} }: ConstructorParams = {}) {
       // available in the local store. In the meantime, we throw an error.
       if ( !record ) throw new Error( `Traversal failed. No record for ${ key }.` );
 
+      // Resolve fields thunk.
+      const $fields = typeof fields === 'function' ? fields() : fields;
+
       const { __fields } = fragment;
 
       const parts = mapObject( __fields, ( fragmentPart, fragmentKey ) => {
-        const field = fields[fragmentKey];
+        const field = $fields[fragmentKey];
         if ( !field ) throw new Error( `Traversal failed. Can't traverse undefined field ${ fragmentKey } on ${ name }.` );
 
         const { type } = field;

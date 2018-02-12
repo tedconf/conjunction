@@ -413,4 +413,67 @@ test( "connect/types/ObjectType...", sub => {
       }
     );
   });
+
+  sub.test( "...should handle thunks (fields) in the resolver.", assert => {
+    const Person = ObjectType({
+      name: 'Person',
+      fields: () => ({
+        id: {
+          type: StringType,
+          resolve: () => 'P01'
+        },
+        name: {
+          type: StringType,
+          resolve: () => 'Judy Jetson'
+        }
+      })
+    });
+
+    Person.resolve({}, { __fields: { id: true, name: true } })
+      .then(
+        person => {
+          assert.deepEqual( person, { id: 'P01', name: 'Judy Jetson' }, 'The node should be resolved.' );
+          assert.end();
+        },
+        err => assert.fail( err )
+      );
+  });
+
+  sub.test( "...should handle thunks (fields) in the normalizer.", assert => {
+    const Person = ObjectType({
+      name: 'Person',
+      fields: () => ({
+        id: {
+          type: StringType,
+          resolve: () => 'P01'
+        },
+        name: {
+          type: StringType,
+          resolve: () => 'Judy Jetson'
+        }
+      })
+    });
+
+    try {
+      const actual = Person.normalize({ id: 'P01', name: 'Judy Jetson' });
+
+      const expected = {
+        ref: { __ref: 'P01' },
+        records: {
+          'P01': {
+            __key: 'P01',
+            __type: 'Person',
+            id: 'P01',
+            name: 'Judy Jetson'
+          }
+        }
+      };
+
+      assert.deepEqual( actual, expected, 'The input should be normalized without error.' );
+      assert.end();
+    }
+    catch ( err ) {
+      assert.end( err );
+    }
+  });
 });
