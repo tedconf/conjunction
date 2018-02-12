@@ -102,7 +102,7 @@ export function ObjectType({ name, fields = {} }: ConstructorParams = {}) {
         }
 
         return resolveArgs( queryParams.__args, fieldArgs )
-          .then( args => fieldResolver ? fieldResolver( source, args, context ) : defaultFieldResolver( source, key ) )
+          .then( args => fieldResolver ? fieldResolver( source, args, context, { nodeQuery: { __args: args, __fields: queryParams.__fields } }) : defaultFieldResolver( source, key ) )
           .then( value => fieldType.resolve( value, queryParams, context ) )
           .then( value => [
             key,
