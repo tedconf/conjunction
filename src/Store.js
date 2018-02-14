@@ -1,5 +1,5 @@
 // @flow
-import mergeDeepRight from 'ramda/src/mergeDeepRight';
+import { mergeDeepRight } from 'ramda';
 
 import pipe from 'callbag-pipe';
 import map from 'callbag-map';

@@ -1,5 +1,5 @@
 // @flow
-import mergeDeepLeft from 'ramda/src/mergeDeepLeft';
+import { mergeDeepLeft } from 'ramda';
 
 import type {
   NormalizedResponse,

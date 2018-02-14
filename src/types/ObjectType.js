@@ -1,5 +1,5 @@
 // @flow
-import mergeDeepLeft from 'ramda/src/mergeDeepLeft';
+import { mergeDeepLeft } from 'ramda';
 import { mapObject, reduceObject } from '../util/object';
 
 const defaultFieldResolver = ( parent, fieldName ) => {

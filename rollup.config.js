@@ -43,16 +43,7 @@ export default [
   },
   {
     input: 'src/index.js',
-    external: ( id ) => {
-      const mods = [
-        'prop-types',
-        'react'
-      ];
-
-      if ( mods.indexOf( id ) !== -1 ) return true;
-
-      return !!id.match( /^babel-runtime/i );
-    },
+    external: ( id ) => !!id.match( /^(babel-runtime|react|prop-types)/i ),
     output: [
       { file: pkg.main, format: 'cjs' },
       { file: pkg.module, format: 'es' }

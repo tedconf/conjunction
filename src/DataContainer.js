@@ -1,6 +1,6 @@
 // @flow
 import { Component } from 'react';
-import equals from 'ramda/src/equals';
+import { equals } from 'ramda';
 
 import {
   PROVIDER_KEY,
