@@ -13,7 +13,7 @@ export default [
     ],
     output: {
       name: 'Conjunction',
-      file: pkg.browser,
+      file: 'dist/conjunction.umd.js',
       format: 'umd',
       globals: {
         'react': 'React',
@@ -27,14 +27,12 @@ export default [
           "flow",
           "react",
           ["env", {
-            "targets": {
-              "browsers": ["last 2 versions", "safari >= 7"]
-            },
             "modules": false
           }],
           "stage-1"
         ],
         plugins: [
+          "annotate-pure-calls",
           "external-helpers"
         ]
       }),
@@ -56,14 +54,12 @@ export default [
           "flow",
           "react",
           ["env", {
-            "targets": {
-              "browsers": ["last 2 versions", "safari >= 7"]
-            },
             "modules": false
           }],
           "stage-1"
         ],
         plugins: [
+          "annotate-pure-calls",
           "transform-runtime"
         ]
       }),
