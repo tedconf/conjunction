@@ -20,6 +20,13 @@ export function ArrayType( Type ) {
     normalize( data: any, path: string ): NormalizedResponse {
       if ( typeof Type !== 'object' || typeof Type.normalize !== 'function' ) throw new Error( `Normalization failed. Invalid array type at ${ path }.` );
 
+      if ( data === null || typeof data === 'undefined' ) {
+        return {
+          ref: data,
+          records: {}
+        };
+      }
+
       const items = data.map( ( item, index ) => Type.normalize( item, `${ path }:${ index }`) );
 
       return {
