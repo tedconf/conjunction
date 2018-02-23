@@ -14,7 +14,8 @@ type RenderProps = {};
 type ComponentProps = {
   render?: ( RenderProps ) => Element<*>,
   children?: ( RenderProps ) => Element<*>,
-  query: any
+  query: any,
+  mutations: any
 };
 
 type ComponentState = {
@@ -29,6 +30,8 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
 
   dispose: any;
 
+  mutate: ( string, ...Array<any> ) => Promise<*>
+
   static contextTypes = {
     [PROVIDER_KEY]: PROVIDER_SHAPE
   };
@@ -39,6 +42,8 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
     if ( process.env.NODE_ENV !== 'production' && !context[PROVIDER_KEY] ) {
       throw new Error( 'DataContainer mounted without a provider.' );
     }
+
+    this.mutate = this.mutate.bind( this );
 
     // TODO: Initialize with data when already available from provider.
     this.state = {
@@ -76,6 +81,7 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
       loading: !loaded,
       data,
       error,
+      mutate: this.mutate
     });
   }
 
@@ -99,8 +105,10 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
   }
 
   componentWillUnmount() {
-    // Release provider subscription.
-    this.dispose();
+    if ( this.dispose ) {
+      // Dispose of prior subscriptions (e.g., on updated props).
+      this.dispose();
+    }
   }
 
   connect( query: any ) {
@@ -110,6 +118,8 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
       // Dispose of prior subscriptions (e.g., on updated props).
       this.dispose();
     }
+
+    if ( !query ) return;
 
     // Connect to the provider.
     this.dispose = provider.connect( query, {
@@ -137,5 +147,24 @@ export class DataContainer extends Component<ComponentProps, ComponentState> {
         })
       }
     });
+  }
+
+  mutate( key: string, ...params: Array<any> ): Promise<*> {
+    const provider = this.context[PROVIDER_KEY];
+    const { mutations } = this.props;
+
+    if ( !mutations ) throw new Error( "You can't call mutate() without defining one or more mutations." );
+
+    const { __updater, ...def } = mutations[key]( ...params );
+
+    const mutation = {
+      __fields: {
+        [key]: {
+          ...def
+        }
+      }
+    };
+
+    return provider.mutate( mutation, __updater ).then( res => res[key] );
   }
 }
