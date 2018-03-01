@@ -1029,9 +1029,9 @@ builtin-modules@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-1.1.1.tgz#270f076c5a72c02f5b65a47df94c5fe3a278892f"
 
-callbag-behavior-subject@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/callbag-behavior-subject/-/callbag-behavior-subject-1.0.1.tgz#aa8265a366150ad66b645fdf1bd38f7dcd742040"
+callbag-behavior-subject@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/callbag-behavior-subject/-/callbag-behavior-subject-1.1.0.tgz#3f0b9d2e12c738522711a1deac5dabf87b07f743"
 
 callbag-flatten@^1.0.0:
   version "1.0.0"

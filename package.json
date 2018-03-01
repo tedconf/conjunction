@@ -9,7 +9,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "callbag-behavior-subject": "^1.0.1",
+    "callbag-behavior-subject": "^1.1.0",
     "callbag-flatten": "^1.0.0",
     "callbag-from-promise": "^1.0.0",
     "callbag-map": "^1.0.0",
