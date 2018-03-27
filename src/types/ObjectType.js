@@ -163,7 +163,7 @@ export function ObjectType({ name, fields = {} }: ConstructorParams = {}) {
     traverse( selector: Selector, records: RecordMap ): Snapshot {
       const { ref, fragment } = selector;
 
-      if ( ref === null ) {
+      if ( ref === null || typeof ref === 'undefined' ) {
         return {
           selector,
           graph: ref

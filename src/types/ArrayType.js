@@ -40,6 +40,11 @@ export function ArrayType( Type ) {
 
       const { ref: arr, fragment } = selector;
 
+      if ( !arr ) return {
+        selector,
+        graph: arr
+      };
+
       const items = arr.map( ( ref ) => Type.traverse({ ref, fragment }, records ) );
 
       return {
